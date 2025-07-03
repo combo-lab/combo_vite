@@ -1,18 +1,5 @@
 defmodule Combo.Vite do
   @moduledoc """
-  Documentation for `Combo.Vite`.
+  Integrates Vite to Combo.
   """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Combo.Vite.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
 end

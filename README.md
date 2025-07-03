@@ -1,21 +1,19 @@
 # Combo.Vite
 
-**TODO: Add description**
+Provides Vite integration for Combo.
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `combo_vite` to your list of dependencies in `mix.exs`:
+Add `:combo_vite` to the list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:combo_vite, "~> 0.1.0"}
+    {:combo_vite, "<requirement>"}
   ]
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/combo_vite>.
+## License
 
+[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
