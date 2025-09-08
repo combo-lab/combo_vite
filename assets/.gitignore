@@ -1,5 +1,4 @@
-/node_modules/
-/dist/
-/inertia-helpers/
-/npm-debug.log
-/package-lock.json
+node_modules/
+dist/
+inertia-helpers/
+npm-debug.log

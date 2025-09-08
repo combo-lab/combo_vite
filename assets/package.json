@@ -1,44 +1,16 @@
 {
-    "name": "vite-plugin-combo",
-    "version": "0.1.0",
-    "description": "The Vite plugin for Combo projects.",
-    "keywords": [
-        "combo",
-        "vite",
-        "vite-plugin"
-    ],
-    "homepage": "https://github.com/combo-team/vite-plugin-combo",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/combo-team/vite-plugin-combo"
-    },
-    "license": "MIT",
-    "author": "Zeke Dou",
+    "$schema": "https://json.schemastore.org/package.json",
+    "private": true,
     "type": "module",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "default": "./dist/index.js"
-        },
-        "./inertia-helpers": {
-            "types": "./inertia-helpers/index.d.ts",
-            "default": "./inertia-helpers/index.js"
-        }
-    },
-    "types": "./dist/index.d.ts",
-    "files": [
-        "/dist",
-        "/inertia-helpers"
-    ],
     "bin": {
         "clean-orphaned-assets": "bin/clean.js"
     },
     "scripts": {
         "build": "npm run build-plugin && npm run build-inertia-helpers",
-        "build-plugin": "rm -rf dist && npm run build-plugin-types && npm run build-plugin-esm && cp src/dev-server-index.html dist/",
-        "build-plugin-types": "tsc --emitDeclarationOnly",
-        "build-plugin-esm": "esbuild src/index.ts --platform=node --format=esm --outfile=dist/index.js",
-        "build-inertia-helpers": "rm -rf inertia-helpers && tsc --project tsconfig.inertia-helpers.json",
+        "build-plugin": "rm -rf ../priv/static/* && npm run build-plugin-types && npm run build-plugin-esm && cp src/dev-server-index.html ../priv/static",
+        "build-plugin-types": "tsc --emitDeclarationOnly --outDir ../priv/static",
+        "build-plugin-esm": "esbuild src/index.ts --platform=node --format=esm --outfile=../priv/static/index.js",
+        "build-inertia-helpers": "rm -rf inertia-helpers && tsc --project tsconfig.inertia-helpers.json --outDir ../priv/static/inertia-helpers",
         "lint": "eslint --ext .ts ./src ./tests",
         "test": "vitest run"
     },

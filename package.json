@@ -1,0 +1,20 @@
+{
+  "name": "vite-plugin-combo",
+  "description": "The Vite plugin for Combo",
+  "version": "0.1.0",
+  "exports": {
+    ".": {
+      "types": "./priv/static/index.d.ts",
+      "default": "./priv/static/index.js"
+    },
+    "./inertia-helpers": {
+      "types": "./priv/static/inertia-helpers/index.d.ts",
+      "default": "./priv/static/inertia-helpers/index.js"
+    }
+  },
+  "files": [
+    "package.json",
+    "priv/static/*",
+    "LICENSE.txt"
+  ]
+}
