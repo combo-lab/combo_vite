@@ -12,6 +12,7 @@ import {
     PluginOption,
     Rollup,
     defaultAllowedOrigins,
+    createLogger,
 } from "vite"
 import fullReload, { Config as FullReloadConfig } from "vite-plugin-full-reload"
 
@@ -90,6 +91,10 @@ export const refreshPaths = [
     "resources/views/**",
     "routes/**",
 ].filter((path) => fs.existsSync(path.replace(/\*\*$/, "")))
+
+const logger = createLogger('info', {
+    prefix: '[combo-vite-plugin]'
+})
 
 /**
  * Vite plugin.
@@ -270,6 +275,16 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
                     viteDevServerUrl = userConfig.server?.origin
                         ? (userConfig.server.origin as DevServerUrl)
                         : resolveDevServerUrl(address, server.config)
+
+                    const hotFileParentDirectory = path.dirname(pluginConfig.hotFile);
+
+                    if (! fs.existsSync(hotFileParentDirectory)) {
+                        fs.mkdirSync(hotFileParentDirectory, { recursive: true })
+
+                        setTimeout(() => {
+                            logger.info(`Hot file directory created ${fs.realpathSync(hotFileParentDirectory)}`, { clear: true, timestamp: true })
+                        }, 200)
+                    }
 
                     fs.writeFileSync(
                         pluginConfig.hotFile,
