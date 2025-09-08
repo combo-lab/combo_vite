@@ -93,7 +93,7 @@ export const refreshPaths = [
 ].filter((path) => fs.existsSync(path.replace(/\*\*$/, "")))
 
 const logger = createLogger('info', {
-    prefix: '[combo-vite-plugin]'
+    prefix: '[vite-plugin-combo]'
 })
 
 /**
