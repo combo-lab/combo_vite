@@ -1,5 +1,5 @@
 defmodule Combo.Vite do
   @moduledoc """
-  Integrates Vite to Combo.
+  Provides Vite integration for Combo.
   """
 end

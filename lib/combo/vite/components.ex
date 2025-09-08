@@ -1,4 +1,4 @@
-defmodule Combo.Vite.Component do
+defmodule Combo.Vite.Components do
   @moduledoc """
   Vite related components to be used within your phoenix application.
 
@@ -32,7 +32,7 @@ defmodule Combo.Vite.Component do
     * https://vite.dev/guide/backend-integration.html
 
   """
-  use Phoenix.Component
+  use Combo.HTML
   alias Combo.Vite.Manifest
 
   defmacro __using__(opts) do
@@ -147,7 +147,7 @@ defmodule Combo.Vite.Component do
 
     assigns = assigns |> assign(:entry, entry) |> assign(:content, content)
 
-    ~H"""
+    ~CE"""
     {{:safe, @content}}
     """
   end
@@ -161,7 +161,7 @@ defmodule Combo.Vite.Component do
   attr :rest, :global
 
   def vite_react_refresh(assigns) do
-    ~H"""
+    ~CE"""
     <%= if running_hot?(@config) do %>
       <script type="module" {@rest}>
         import RefreshRuntime from "<%= to_dev_server_url(@config, "@react-refresh") %>";
@@ -194,7 +194,7 @@ defmodule Combo.Vite.Component do
   defp vite_on_dev_server(%{entries: entries, config: _config} = assigns) do
     assigns = assign(assigns, :entries, ["@vite/client" | entries])
 
-    ~H"""
+    ~CE"""
     <%= for entry <- @entries do %>
       <.tag file={entry} to_url={&to_dev_server_url/2} config={@config} />
     <% end %>
@@ -210,7 +210,7 @@ defmodule Combo.Vite.Component do
     manifest = config.manifest_file |> File.read!() |> Manifest.parse()
     assigns = assign(assigns, :manifest, manifest)
 
-    ~H"""
+    ~CE"""
     <%= for entry <- @entries do %>
       <.entry_tags entry={entry} manifest={@manifest} config={@config} />
     <% end %>
@@ -225,7 +225,7 @@ defmodule Combo.Vite.Component do
         config: config
       )
 
-    ~H"""
+    ~CE"""
     <%= for css <- @chunk.css do %>
       <.tag file={css} to_url={&to_static_url/2} config={@config} />
     <% end %>
@@ -258,7 +258,7 @@ defmodule Combo.Vite.Component do
   attr :rest, :global
 
   defp tag(assigns) do
-    ~H"""
+    ~CE"""
     <%= if is_css(@file) do %>
       <link rel="stylesheet" href={apply(@to_url, [@config, @file])} {@rest} />
     <% else %>
