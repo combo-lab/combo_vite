@@ -17,12 +17,13 @@ defmodule Combo.Vite.Manifest do
 
     Map.new(chunks_map, fn {key, chunk} ->
       chunk = %Chunk{
-        file: Map.fetch!(chunk, "file"),
         src: Map.get(chunk, "src", nil),
+        file: Map.fetch!(chunk, "file"),
         css: Map.get(chunk, "css", []),
         assets: Map.get(chunk, "assets", []),
         is_entry?: Map.get(chunk, "isEntry", false),
         name: Map.get(chunk, "name", nil),
+        names: Map.get(chunk, "names", []),
         is_dynamic_entry?: Map.get(chunk, "isDynamicEntry", false),
         imports: Map.get(chunk, "imports", []),
         dynamic_imports: Map.get(chunk, "dynamicImports", [])
