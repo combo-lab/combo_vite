@@ -1,10 +1,10 @@
 defmodule Combo.Vite.Components do
   @moduledoc """
-  Vite related components to be used within your phoenix application.
+  Provides Vite related components.
 
   ## Usage
 
-  Put the following into your `<head />` of your phoenix root layout:
+  Put the following into your `<head />` of your root layout:
 
       <Combo.Vite.Components.assets
         names={["js/app.js", "css/app.css"]}

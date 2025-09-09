@@ -14,6 +14,10 @@ def deps do
 end
 ```
 
+## Usage
+
+Read the [User Guide](./GUIDE.md).
+
 ## License
 
 [MIT](./LICENSE.txt)
