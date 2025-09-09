@@ -17,10 +17,15 @@ describe("vite-plugin-combo", () => {
         )
     })
 
-    it("accepts a single input", () => {
-        const plugin = combo({ input: "src/js/app.ts" })[0]
+    it("accepts input as a string", () => {
+        const plugin = combo({
+            input: "src/js/app.ts"
+        })[0]
 
-        const config = plugin.config({}, { command: "build", mode: "production" })
+        const config = plugin.config(
+            {},
+            { command: "build", mode: "production" }
+        )
         expect(config.build.rollupOptions.input).toBe("src/js/app.ts")
 
         const ssrConfig = plugin.config(
@@ -30,10 +35,15 @@ describe("vite-plugin-combo", () => {
         expect(ssrConfig.build.rollupOptions.input).toBe("src/js/app.ts")
     })
 
-    it("accepts an array of inputs", () => {
-        const plugin = combo({ input: ["src/js/app.ts", "src/js/other.js"] })[0]
+    it("accepts input as an array", () => {
+        const plugin = combo({
+            input: ["src/js/app.ts", "src/js/other.js"]
+        })[0]
 
-        const config = plugin.config({}, { command: "build", mode: "production" })
+        const config = plugin.config(
+            {},
+            { command: "build", mode: "production" }
+        )
         expect(config.build.rollupOptions.input).toEqual(["src/js/app.ts", "src/js/other.js"])
 
         const ssrConfig = plugin.config(
@@ -41,6 +51,67 @@ describe("vite-plugin-combo", () => {
             { command: "build", mode: "production" },
         )
         expect(ssrConfig.build.rollupOptions.input).toEqual(["src/js/app.ts", "src/js/other.js"])
+    })
+
+    it("accepts input and ssrInput as strings", () => {
+        const plugin = combo({
+            input: "src/js/app.ts",
+            ssrInput: "src/js/ssr.ts",
+        })[0]
+
+        const config = plugin.config(
+            {},
+            { command: "build", mode: "production" }
+        )
+        expect(config.build.rollupOptions.input).toBe("src/js/app.ts")
+
+        const ssrConfig = plugin.config(
+            { build: { ssr: true } },
+            { command: "build", mode: "production" },
+        )
+        expect(ssrConfig.build.rollupOptions.input).toBe("src/js/ssr.ts")
+    })
+
+    it("accepts input and ssrInput as arrays", () => {
+        const plugin = combo({
+            input: ["src/js/app.ts", "src/js/other.js"],
+            ssrInput: ["src/js/ssr.ts", "src/js/other.js"],
+        })[0]
+
+        const config = plugin.config(
+            {},
+            { command: "build", mode: "production" }
+        )
+        expect(config.build.rollupOptions.input).toEqual(["src/js/app.ts", "src/js/other.js"])
+
+        const ssrConfig = plugin.config(
+            { build: { ssr: true } },
+            { command: "build", mode: "production" },
+        )
+        expect(ssrConfig.build.rollupOptions.input).toEqual(["src/js/ssr.ts", "src/js/other.js"])
+    })
+
+    it("accepts input and ssrInput as objects", () => {
+        const plugin = combo({
+            input: { app: "src/js/entrypoint-csr.js" },
+            ssrInput: { ssr: "src/js/entrypoint-ssr.js" },
+        })[0]
+
+        const config = plugin.config(
+            {},
+            { command: "build", mode: "production" }
+        )
+        expect(config.build.rollupOptions.input).toEqual({
+            app: "src/js/entrypoint-csr.js",
+        })
+
+        const ssrConfig = plugin.config(
+            { build: { ssr: true } },
+            { command: "build", mode: "production" },
+        )
+        expect(ssrConfig.build.rollupOptions.input).toEqual({
+            ssr: "src/js/entrypoint-ssr.js",
+        })
     })
 
     it("accepts a full configuration", () => {
@@ -52,7 +123,10 @@ describe("vite-plugin-combo", () => {
             ssrOutDir: "other-ssr-output",
         })[0]
 
-        const config = plugin.config({}, { command: "build", mode: "production" })
+        const config = plugin.config(
+            {},
+            { command: "build", mode: "production" }
+        )
         expect(config.base).toBe("/other-build/")
         expect(config.build.manifest).toBe("manifest.json")
         expect(config.build.outDir).toBe("other-static/other-build")
@@ -68,57 +142,6 @@ describe("vite-plugin-combo", () => {
         expect(ssrConfig.build.rollupOptions.input).toBe("src/js/ssr.ts")
     })
 
-    it("accepts a single input within a full configuration", () => {
-        const plugin = combo({
-            input: "src/js/app.ts",
-            ssrInput: "src/js/ssr.ts",
-        })[0]
-
-        const config = plugin.config({}, { command: "build", mode: "production" })
-        expect(config.build.rollupOptions.input).toBe("src/js/app.ts")
-
-        const ssrConfig = plugin.config(
-            { build: { ssr: true } },
-            { command: "build", mode: "production" },
-        )
-        expect(ssrConfig.build.rollupOptions.input).toBe("src/js/ssr.ts")
-    })
-
-    it("accepts an array of inputs within a full configuration", () => {
-        const plugin = combo({
-            input: ["src/js/app.ts", "src/js/other.js"],
-            ssrInput: ["src/js/ssr.ts", "src/js/other.js"],
-        })[0]
-
-        const config = plugin.config({}, { command: "build", mode: "production" })
-        expect(config.build.rollupOptions.input).toEqual(["src/js/app.ts", "src/js/other.js"])
-
-        const ssrConfig = plugin.config(
-            { build: { ssr: true } },
-            { command: "build", mode: "production" },
-        )
-        expect(ssrConfig.build.rollupOptions.input).toEqual(["src/js/ssr.ts", "src/js/other.js"])
-    })
-
-    it("accepts an input object within a full configuration", () => {
-        const plugin = combo({
-            input: { app: "src/js/entrypoint-csr.js" },
-            ssrInput: { ssr: "src/js/entrypoint-ssr.js" },
-        })[0]
-
-        const config = plugin.config({}, { command: "build", mode: "production" })
-        expect(config.build.rollupOptions.input).toEqual({
-            app: "src/js/entrypoint-csr.js",
-        })
-
-        const ssrConfig = plugin.config(
-            { build: { ssr: true } },
-            { command: "build", mode: "production" },
-        )
-        expect(ssrConfig.build.rollupOptions.input).toEqual({
-            ssr: "src/js/entrypoint-ssr.js",
-        })
-    })
 
     it("has a default manifest path", () => {
         const plugin = combo({
@@ -126,33 +149,27 @@ describe("vite-plugin-combo", () => {
         })[0]
 
         const userConfig = {}
-
         const config = plugin.config(userConfig, { command: "build", mode: "production" })
-
         expect(config.build.manifest).toBe("manifest.json")
     })
 
-    it("respects the users build.manifest config option", () => {
+    it("respects the users config option - build.manifest", () => {
         const plugin = combo({
             input: "src/js/app.js",
         })[0]
 
         const userConfig = { build: { manifest: "my-custom-manifest.json" } }
-
         const config = plugin.config(userConfig, { command: "build", mode: "production" })
-
         expect(config.build.manifest).toBe("my-custom-manifest.json")
     })
 
-    it("respects users base config option", () => {
+    it("respects users config option - base", () => {
         const plugin = combo({
             input: "src/js/app.ts",
         })[0]
 
         const userConfig = { base: "/foo/" }
-
         const config = plugin.config(userConfig, { command: "build", mode: "production" })
-
         expect(config.base).toBe("/foo/")
     })
 
@@ -162,7 +179,10 @@ describe("vite-plugin-combo", () => {
             ssrInput: "src/js/ssr.js",
         })[0]
 
-        const config = plugin.config({}, { command: "build", mode: "production" })
+        const config = plugin.config(
+            {},
+            { command: "build", mode: "production" }
+        )
         expect(config.base).toBe("/build/")
         expect(config.build.manifest).toBe("manifest.json")
         expect(config.build.outDir).toBe("../priv/static/build")
@@ -178,9 +198,11 @@ describe("vite-plugin-combo", () => {
         expect(ssrConfig.build.rollupOptions.input).toBe("src/js/ssr.js")
     })
 
-    it("uses the default entry point when ssr entry point is not provided", () => {
+    it("uses the input when ssrInput is not provided", () => {
         // This is support users who may want a dedicated Vite config for SSR.
-        const plugin = combo({ input: "src/js/ssr.js" })[0]
+        const plugin = combo({
+            input: "src/js/ssr.js"
+        })[0]
 
         const ssrConfig = plugin.config(
             { build: { ssr: true } },
@@ -191,7 +213,9 @@ describe("vite-plugin-combo", () => {
 
     it("prefixes the base with ASSET_URL in production mode", () => {
         process.env.ASSET_URL = "http://example.com"
-        const plugin = combo({ input: "src/js/app.js" })[0]
+        const plugin = combo({
+            input: "src/js/app.js"
+        })[0]
 
         const devConfig = plugin.config({}, { command: "serve", mode: "development" })
         expect(devConfig.base).toBe("")
@@ -222,7 +246,10 @@ describe("vite-plugin-combo", () => {
             ssrOutDir: "/ssr-output/test/",
         })[0]
 
-        const config = plugin.config({}, { command: "build", mode: "production" })
+        const config = plugin.config(
+            {},
+            { command: "build", mode: "production" }
+        )
         expect(config.base).toBe("/build/test/")
         expect(config.build.outDir).toBe("public/test/build/test")
 
@@ -234,7 +261,9 @@ describe("vite-plugin-combo", () => {
     })
 
     it("provides an @ alias by default", () => {
-        const plugin = combo({ input: "src/js/app.js" })[0]
+        const plugin = combo({
+            input: "src/js/app.js"
+        })[0]
 
         const config = plugin.config({}, { command: "build", mode: "development" })
 
@@ -242,7 +271,9 @@ describe("vite-plugin-combo", () => {
     })
 
     it("respects a users existing @ alias", () => {
-        const plugin = combo({ input: "src/js/app.js" })[0]
+        const plugin = combo({
+            input: "src/js/app.js"
+        })[0]
 
         const config = plugin.config(
             {
@@ -259,7 +290,9 @@ describe("vite-plugin-combo", () => {
     })
 
     it("appends an Alias object when using an alias array", () => {
-        const plugin = combo({ input: "src/js/app.js" })[0]
+        const plugin = combo({
+            input: "src/js/app.js"
+        })[0]
 
         const config = plugin.config(
             {
@@ -278,7 +311,9 @@ describe("vite-plugin-combo", () => {
 
     it("prevents the Inertia helpers from being externalized", () => {
         /* eslint-disable @typescript-eslint/ban-ts-comment */
-        const plugin = combo({ input: "src/js/app.js" })[0]
+        const plugin = combo({
+            input: "src/js/app.js"
+        })[0]
 
         const noSsrConfig = plugin.config(
             { build: { ssr: true } },
@@ -312,12 +347,6 @@ describe("vite-plugin-combo", () => {
         expect(stringNoExternalConfig.ssr.noExternal).toEqual(["foo", "vite-plugin-combo"])
     })
 
-    it("does not configure full reload when configuration it not an object", () => {
-        const plugins = combo({ input: "src/js/app.js" })
-
-        expect(plugins.length).toBe(1)
-    })
-
     it("does not configure full reload when refresh is not present", () => {
         const plugins = combo({
             input: "src/js/app.js",
@@ -331,6 +360,7 @@ describe("vite-plugin-combo", () => {
             input: "src/js/app.js",
             refresh: undefined,
         })
+
         expect(plugins.length).toBe(1)
     })
 
@@ -343,25 +373,13 @@ describe("vite-plugin-combo", () => {
         expect(plugins.length).toBe(1)
     })
 
-    it("configures full reload with routes and views when refresh is true", () => {
+    it("does not configure full reload when refresh is []", () => {
         const plugins = combo({
             input: "src/js/app.js",
-            refresh: [
-                "../lib/demo/web/router.ex",
-                "../lib/demo/web/(controllers|layouts|components)/**/*.(ex|ceex)",
-            ],
+            refresh: [],
         })
 
-        console.log(plugins)
-
-        expect(plugins.length).toBe(2)
-        /** @ts-ignore */
-        expect(plugins[1].__combo_plugin_config).toEqual({
-            paths: [
-                "../lib/demo/web/router.ex",
-                "../lib/demo/web/(controllers|layouts|components)/**/*.(ex|ceex)",
-            ],
-        })
+        expect(plugins.length).toBe(1)
     })
 
     it("configures full reload when refresh is a single path", () => {
