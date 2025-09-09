@@ -15,8 +15,7 @@ defmodule Combo.Vite.Components do
 
             use Combo.Vite.Components,
               endpoint: Demo.Web.Endpoint,
-              static_dir: {:demo, "priv/static"},
-              ssr_out_dir: {:demo, "priv/ssr"}
+              static_dir: {:demo, "priv/static"}
 
             # ...
           end
@@ -28,9 +27,21 @@ defmodule Combo.Vite.Components do
   Then, all the components and helper functions will be available in your
   inline templates or template files.
 
+  ## Options
+
+    * `:endpoint` (required) - the app's endpoint.
+    * `:static_dir` (required) -
+    * `:build_dir` - Default to `"build"`.
+    * `:hot_filename` - Default to `"__hot__"`.
+    * `:manifest_filename` - Default to `"manifest.json"`.
+
   ## References
 
-    * [Vite - Guide - Backend Integration](https://vite.dev/guide/backend-integration.html)
+    * [Vite - Guide - Backend Integration\
+      ](https://vite.dev/guide/backend-integration.html)
+    * [`Illuminate/Foundation/Vite.php` from Laravel\
+      ](https://github.com/laravel/framework/blob/12.x/src/Illuminate/Foundation/Vite.php)
+
 
   """
   use Combo.HTML
@@ -89,28 +100,34 @@ defmodule Combo.Vite.Components do
   end
 
   defp build_config_ast(opts) do
+    known_keys = [:endpoint, :static_dir, :build_dir, :hot_filename, :manifest_filename]
+    required_keys = [:endpoint, :static_dir]
+
+    for {key, _value} <- opts do
+      if key not in known_keys do
+        raise ArgumentError, "Unknown option: #{inspect(key)}"
+      end
+    end
+
+    for key <- required_keys do
+      if not Keyword.has_key?(opts, key) do
+        raise ArgumentError, "Missing required option: #{inspect(key)}"
+      end
+    end
+
     endpoint = Keyword.fetch!(opts, :endpoint)
-    static_dir = opts |> read_path_opt!(:static_dir) |> resolve_path_opt()
+    static_dir = read_path_opt!(opts, :static_dir)
     build_dir = opts |> Keyword.get(:build_dir, "build") |> String.trim("/")
-    out_dir = Path.join(static_dir, build_dir)
-    ssr_out_dir = opts |> read_path_opt!(:ssr_out_dir) |> resolve_path_opt()
     hot_filename = Keyword.get(opts, :hot_filename, "__hot__")
-    hot_file = Path.join(static_dir, hot_filename)
     manifest_filename = Keyword.get(opts, :manifest_filename, "manifest.json")
-    manifest_file = Path.join(out_dir, manifest_filename)
 
     {:%{}, [],
      [
-       # backend parts
        endpoint: endpoint,
-
-       # frontend parts
        static_dir: static_dir,
        build_dir: build_dir,
-       out_dir: out_dir,
-       ssr_out_dir: ssr_out_dir,
-       hot_file: hot_file,
-       manifest_file: manifest_file
+       hot_filename: hot_filename,
+       manifest_filename: manifest_filename
      ]}
   end
 
@@ -120,13 +137,6 @@ defmodule Combo.Vite.Components do
       path when is_binary(path) -> path
       {_, _} = app_and_path -> app_and_path
       _ -> raise ArgumentError, "#{inspect(name)} must be an atom, a binary or a tuple"
-    end
-  end
-
-  defp resolve_path_opt(opt) do
-    case opt do
-      {app, path} -> Path.join([Application.app_dir(app), path])
-      path -> path
     end
   end
 
@@ -217,7 +227,7 @@ defmodule Combo.Vite.Components do
     if running_hot?(config) do
       to_dev_server_url(name, config)
     else
-      manifest = config.manifest_file |> File.read!() |> Manifest.parse()
+      manifest = manifest_file(config) |> File.read!() |> Manifest.parse()
       chunk = Manifest.fetch_chunk!(manifest, name)
       to_static_url(chunk.file, config)
     end
@@ -240,13 +250,13 @@ defmodule Combo.Vite.Components do
   def vite_content(name, config) do
     name = remove_leading_slash(name)
 
-    manifest = config.manifest_file |> File.read!() |> Manifest.parse()
+    manifest = manifest_file(config) |> File.read!() |> Manifest.parse()
     # throw error if file not found
 
     chunk = Manifest.fetch_chunk!(manifest, name)
     # throw error if chunk not found
 
-    file = Path.join(config.out_dir, chunk.file)
+    file = Path.join(out_dir(config), chunk.file)
     # throw error if file not found
 
     File.read!(file)
@@ -271,14 +281,14 @@ defmodule Combo.Vite.Components do
   end
 
   defp to_dev_server_url(name, config) do
-    base_url = config.hot_file |> File.read!() |> String.trim()
+    base_url = hot_file(config) |> File.read!() |> String.trim()
     Path.join([base_url, name])
   end
 
   ## For production mode
 
   defp vite_on_manifest(%{names: _names, config: config} = assigns) do
-    manifest = config.manifest_file |> File.read!() |> Manifest.parse()
+    manifest = manifest_file(config) |> File.read!() |> Manifest.parse()
     assigns = assign(assigns, :manifest, manifest)
 
     ~CE"""
@@ -289,7 +299,7 @@ defmodule Combo.Vite.Components do
   end
 
   defp vite_on_manifest(%{name: _name, config: config} = assigns) do
-    manifest = config.manifest_file |> File.read!() |> Manifest.parse()
+    manifest = manifest_file(config) |> File.read!() |> Manifest.parse()
     assigns = assign(assigns, :manifest, manifest)
 
     ~CE"""
@@ -336,7 +346,14 @@ defmodule Combo.Vite.Components do
 
   defp remove_leading_slash(name), do: Path.relative(name)
 
-  defp running_hot?(config), do: File.exists?(config.hot_file)
+  defp out_dir(config), do: Path.join(resolve_path(config.static_dir), config.build_dir)
+  defp hot_file(config), do: Path.join(resolve_path(config.static_dir), config.hot_filename)
+  defp manifest_file(config), do: Path.join(out_dir(config), config.manifest_filename)
+
+  defp resolve_path({app, path}), do: Path.join([Application.app_dir(app), path])
+  defp resolve_path(path), do: path
+
+  defp running_hot?(config), do: File.exists?(hot_file(config))
 
   attr :file, :string, required: true
   attr :to_url, {:fun, 2}, required: true
