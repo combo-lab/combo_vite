@@ -1,19 +1,35 @@
 {
-    "$schema": "https://json.schemastore.org/package.json",
-    "private": true,
+    "name": "vite-plugin-combo",
+    "description": "The Vite plugin for Combo",
+    "version": "0.1.0",
     "type": "module",
     "bin": {
         "clean-orphaned-assets": "bin/clean.js"
     },
     "scripts": {
         "build": "npm run build-plugin && npm run build-inertia-helpers",
-        "build-plugin": "rm -rf ../priv/static/* && npm run build-plugin-types && npm run build-plugin-esm && cp src/dev-server-index.html ../priv/static",
-        "build-plugin-types": "tsc --emitDeclarationOnly --outDir ../priv/static",
-        "build-plugin-esm": "esbuild src/index.ts --platform=node --format=esm --outfile=../priv/static/index.js",
-        "build-inertia-helpers": "rm -rf inertia-helpers && tsc --project tsconfig.inertia-helpers.json --outDir ../priv/static/inertia-helpers",
+        "build-plugin": "rm -rf dist && npm run build-plugin-types && npm run build-plugin-esm && cp src/dev-server-index.html dist/",
+        "build-plugin-types": "tsc --emitDeclarationOnly",
+        "build-plugin-esm": "esbuild src/index.ts --platform=node --format=esm --outfile=dist/index.js",
+        "build-inertia-helpers": "rm -rf inertia-helpers && tsc --project tsconfig.inertia-helpers.json",
         "lint": "eslint --ext .ts ./src ./tests",
         "test": "vitest run"
     },
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./inertia-helpers": {
+            "types": "./inertia-helpers/index.d.ts",
+            "default": "./inertia-helpers/index.js"
+        }
+    },
+    "types": "./dist/index.d.ts",
+    "files": [
+        "/dist",
+        "/inertia-helpers"
+    ],
     "devDependencies": {
         "@eslint/eslintrc": "^3.3.1",
         "@eslint/js": "^9.30.1",
