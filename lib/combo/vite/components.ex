@@ -281,7 +281,7 @@ defmodule Combo.Vite.Components do
   end
 
   defp to_dev_server_url(name, config) do
-    base_url = hot_file(config) |> File.read!() |> String.trim()
+    base_url = fetch_dev_server_base_url!(config)
     Path.join([base_url, name])
   end
 
@@ -353,20 +353,42 @@ defmodule Combo.Vite.Components do
   defp resolve_path({app, path}), do: Path.join([Application.app_dir(app), path])
   defp resolve_path(path), do: path
 
-  defp running_hot?(config), do: File.exists?(hot_file(config))
+  defp running_hot?(config) do
+    hot_file = hot_file(config)
+    key = {__MODULE__, hot_file, :running_hot?}
+
+    cached_fetch!(key, fn ->
+      File.exists?(hot_file)
+    end)
+  end
+
+  defp fetch_dev_server_base_url!(config) do
+    hot_file = hot_file(config)
+    key = {__MODULE__, hot_file, :dev_server_base_url}
+
+    cached_fetch!(key, fn ->
+      hot_file |> File.read!() |> String.trim()
+    end)
+  end
 
   defp fetch_manifest!(config) do
     manifest_file = manifest_file(config)
-    key = {__MODULE__, :manifest, manifest_file}
+    key = {__MODULE__, manifest_file, :manifest}
 
+    cached_fetch!(key, fn ->
+      manifest_file |> File.read!() |> Manifest.parse()
+    end)
+  end
+
+  defp cached_fetch!(key, fun) when is_function(fun, 0) do
     case :persistent_term.get(key, nil) do
       nil ->
-        manifest = manifest_file |> File.read!() |> Manifest.parse()
-        :persistent_term.put(key, manifest)
-        manifest
+        value = fun.()
+        :persistent_term.put(key, value)
+        value
 
-      manifest ->
-        manifest
+      value ->
+        value
     end
   end
 
