@@ -92,7 +92,7 @@ defmodule Combo.Vite.Components do
       end
 
       def vite_content(name) do
-        unquote(__MODULE__).vite_url(name, combo_vite_config())
+        unquote(__MODULE__).vite_content(name, combo_vite_config())
       end
 
       defp combo_vite_config, do: @combo_vite_config
