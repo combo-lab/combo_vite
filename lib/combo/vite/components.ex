@@ -24,16 +24,30 @@ defmodule Combo.Vite.Components do
         # ...
       end
 
-  Then, all the components and helper functions will be available in your
-  inline templates or template files.
+  When you `use Combo.Vite.Components, opts`, it will use the given `opts` to
+  build config, and generate wrapper components and functions provided by
+  [`Combo.Vite.Components`](#functions).
 
   ## Options
 
-    * `:endpoint` (required) - the app's endpoint.
-    * `:static_dir` (required) -
-    * `:build_dir` - Default to `"build"`.
-    * `:hot_filename` - Default to `"__hot__"`.
-    * `:manifest_filename` - Default to `"manifest.json"`.
+    * `:endpoint` (required) - the endpoint module.
+    * `:static_dir` (required) - the path of public static directory. The value
+      of it must be:
+      * `{app, path}`, where `app` and `path` will be passed to
+        `Application.app_dir(app, path)`.
+      * an atom, which is the shortcut for `{app, "priv/static"}`.
+    * `:build_dir` - the dirname of a dir for placing built assets.
+      Default to `"build"`.
+      > Its parent directory is the directory specified by `:static_dir`, and
+      > that's immutable.
+    * `:hot_file` - the filename of the "hot" file.
+      Default to `"__hot__"`.
+      > Its parent directory is the directory specified by `:static_dir`. and
+      > that's immutable.
+    * `:manifest_file` - the filename of the manifest file.
+      Default to `"manifest.json"`.
+      > Its parent directory is the directory specified by `:build_dir`, and
+      > that's immutable.
 
   ## References
 
@@ -42,8 +56,18 @@ defmodule Combo.Vite.Components do
     * [`Illuminate/Foundation/Vite.php` from Laravel\
       ](https://github.com/laravel/framework/blob/12.x/src/Illuminate/Foundation/Vite.php)
 
-
   """
+
+  @note_on_component """
+  > When you `use Combo.Vite.Components, opts`, a wrapper component that
+  > doesn't require `:config` attr will be generated.
+  """
+
+  @note_on_function """
+  > When you `use Combo.Vite.Components, opts`, a wrapper function that
+  > doesn't require `config` argument will be generated.
+  """
+
   use Combo.HTML
   alias Combo.Vite.Manifest
 
@@ -134,9 +158,8 @@ defmodule Combo.Vite.Components do
   defp read_path_opt!(opts, name) do
     case Keyword.fetch!(opts, name) do
       app when is_atom(app) -> {app, "priv/static"}
-      path when is_binary(path) -> path
       {_, _} = app_and_path -> app_and_path
-      _ -> raise ArgumentError, "#{inspect(name)} must be an atom, a binary or a tuple"
+      _ -> raise ArgumentError, "the value of #{inspect(name)} option must be an atom or a tuple"
     end
   end
 
@@ -150,6 +173,8 @@ defmodule Combo.Vite.Components do
     * In build mode, it loads the compiled and versioned assets, including any
       imported CSS.
 
+  #{@note_on_component}
+
   ## Examples
 
   ```ceex
@@ -157,7 +182,7 @@ defmodule Combo.Vite.Components do
   ```
   """
   attr :names, :string, required: true
-  attr :config, :map, required: true, doc: false
+  attr :config, :map, required: true
 
   def vite_assets(%{names: names, config: config} = assigns) do
     names = Enum.map(names, &remove_leading_slash/1)
@@ -174,6 +199,8 @@ defmodule Combo.Vite.Components do
   Different from `vite_assets/1`, it dosen't loads the `@vite/client`. All
   other behaviors are the same.
 
+  #{@note_on_component}
+
   ## Examples
 
   ```ceex
@@ -181,7 +208,7 @@ defmodule Combo.Vite.Components do
   ```
   """
   attr :name, :string, required: true
-  attr :config, :map, required: true, doc: false
+  attr :config, :map, required: true
 
   def vite_asset(%{name: name, config: config} = assigns) do
     name = remove_leading_slash(name)
@@ -193,11 +220,18 @@ defmodule Combo.Vite.Components do
   end
 
   @doc """
-  Renders script element for React refresh runtime.
+  Renders script element for React refresh runtime, only when the Vite dev
+  server is running.
 
-  > Note that the script is generated only when the Vite dev server is running.
+  #{@note_on_component}
+
+  ## Examples
+
+  ```ceex
+  <.vite_react_refresh />
+  ```
   """
-  attr :config, :map, required: true, doc: false
+  attr :config, :map, required: true
   attr :rest, :global
 
   def vite_react_refresh(assigns) do
@@ -217,6 +251,8 @@ defmodule Combo.Vite.Components do
   @doc """
   Gets the URL of a given asset.
 
+  #{@note_on_function}
+
   ## Examples
 
   ```ceex
@@ -235,6 +271,8 @@ defmodule Combo.Vite.Components do
 
   @doc """
   Gets the content of a given asset.
+
+  #{@note_on_function}
 
   ## Examples
 
@@ -351,7 +389,6 @@ defmodule Combo.Vite.Components do
   defp manifest_file(config), do: Path.join(out_dir(config), config.manifest_filename)
 
   defp resolve_path({app, path}), do: Path.join([Application.app_dir(app), path])
-  defp resolve_path(path), do: path
 
   defp running_hot?(config) do
     hot_file = hot_file(config)
