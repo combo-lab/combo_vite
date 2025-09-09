@@ -17,7 +17,7 @@ defmodule Combo.Vite.ManifestTest do
       }
       """
 
-      assert %{
+      assert Manifest.parse(json) == %{
                "src/app.js" => %Combo.Vite.Manifest.Chunk{
                  file: "assets/app-BRBmoGS9.js",
                  src: "src/app.js",
@@ -25,11 +25,12 @@ defmodule Combo.Vite.ManifestTest do
                  assets: [],
                  is_entry?: true,
                  name: "app",
+                 names: [],
                  is_dynamic_entry?: false,
                  imports: ["_shared-B7PI925R.js"],
                  dynamic_imports: []
                }
-             } = Manifest.parse(json)
+             }
     end
   end
 
