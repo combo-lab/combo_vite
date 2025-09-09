@@ -171,8 +171,8 @@ defmodule Combo.Vite.Components do
   @doc """
   Renders an element for a given asset.
 
-  Different from `vite_assets/1`, it dosen't loads the `@vite/client` in dev
-  mode. All other behaviors are the same.
+  Different from `vite_assets/1`, it dosen't loads the `@vite/client`. All
+  other behaviors are the same.
 
   ## Examples
 
@@ -195,7 +195,7 @@ defmodule Combo.Vite.Components do
   @doc """
   Renders script element for React refresh runtime.
 
-  > Note that the script is generated only when the dev server is running.
+  > Note that the script is generated only when the Vite dev server is running.
   """
   attr :config, :map, required: true, doc: false
   attr :rest, :global
