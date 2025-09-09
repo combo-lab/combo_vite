@@ -32,6 +32,8 @@ interface PluginConfig {
     /**
      * The public static directory's subdirectory where the CSR bundles should be written.
      *
+     * It parent directory is the directory specified by staticDir.
+     *
      * @default 'build'
      *
      */
@@ -50,14 +52,16 @@ interface PluginConfig {
     ssrOutDir?: string
 
     /**
-     * The path to the "hot" file.
+     * The file name of the "hot" file.
      *
-     * @default `${staticDir}/__hot__`
+     * It parent directory is the directory specified by staticDir.
+     *
+     * @default '__hot__'
      */
     hotFile?: string
 
     /**
-     * Configuration for performing full page refresh on blade (or other) file changes.
+     * Configuration for reloading page on file (such as templates) changes.
      *
      * {@link https://github.com/ElMassimo/vite-plugin-full-reload}
      * @default false
@@ -83,17 +87,8 @@ type DevServerUrl = `${"http" | "https"}://${string}:${number}`
 
 let exitHandlersBound = false
 
-export const refreshPaths = [
-    "app/Livewire/**",
-    "app/View/Components/**",
-    "lang/**",
-    "resources/lang/**",
-    "resources/views/**",
-    "routes/**",
-].filter((path) => fs.existsSync(path.replace(/\*\*$/, "")))
-
-const logger = createLogger('info', {
-    prefix: '[vite-plugin-combo]'
+const logger = createLogger("info", {
+    prefix: "[vite-plugin-combo]",
 })
 
 /**
@@ -101,9 +96,7 @@ const logger = createLogger('info', {
  *
  * @param config - A config object or relative path(s) of the scripts to be compiled.
  */
-export default function combo(
-    config: string | string[] | PluginConfig,
-): [ComboPlugin, ...Plugin[]] {
+export default function combo(config: PluginConfig): [ComboPlugin, ...Plugin[]] {
     const pluginConfig = resolvePluginConfig(config)
 
     return [
@@ -115,13 +108,9 @@ export default function combo(
 /**
  * Convert the users configuration into a standard structure with defaults.
  */
-function resolvePluginConfig(config: string | string[] | PluginConfig): Required<PluginConfig> {
+function resolvePluginConfig(config: PluginConfig): Required<PluginConfig> {
     if (typeof config === "undefined") {
         throw new Error("vite-plugin-combo: missing configuration.")
-    }
-
-    if (typeof config === "string" || Array.isArray(config)) {
-        config = { input: config, ssrInput: config }
     }
 
     if (typeof config.input === "undefined") {
@@ -150,10 +139,6 @@ function resolvePluginConfig(config: string | string[] | PluginConfig): Required
         config.ssrOutDir = config.ssrOutDir.trim().replace(/^\/+/, "").replace(/\/+$/, "")
     }
 
-    if (config.refresh === true) {
-        config.refresh = [{ paths: refreshPaths }]
-    }
-
     const staticDir = config.staticDir ?? "../priv/static"
     const ssrOutDir = config.ssrOutDir ?? "../priv/ssr"
 
@@ -164,7 +149,7 @@ function resolvePluginConfig(config: string | string[] | PluginConfig): Required
         ssrInput: config.ssrInput ?? config.input,
         ssrOutDir: ssrOutDir,
         hotFile: config.hotFile ?? path.join(staticDir, "__hot__"),
-        refresh: config.refresh ?? false,
+        refresh: config.refresh ?? [],
         transformOnServe: config.transformOnServe ?? ((code) => code),
     }
 }
@@ -276,13 +261,16 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
                         ? (userConfig.server.origin as DevServerUrl)
                         : resolveDevServerUrl(address, server.config)
 
-                    const hotFileParentDirectory = path.dirname(pluginConfig.hotFile);
+                    const hotFileParentDirectory = path.dirname(pluginConfig.hotFile)
 
-                    if (! fs.existsSync(hotFileParentDirectory)) {
+                    if (!fs.existsSync(hotFileParentDirectory)) {
                         fs.mkdirSync(hotFileParentDirectory, { recursive: true })
 
                         setTimeout(() => {
-                            logger.info(`Hot file directory created ${fs.realpathSync(hotFileParentDirectory)}`, { clear: true, timestamp: true })
+                            logger.info(
+                                `Hot file directory created ${fs.realpathSync(hotFileParentDirectory)}`,
+                                { clear: true, timestamp: true },
+                            )
                         }, 200)
                     }
 
