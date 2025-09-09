@@ -1,32 +1,10 @@
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { describe, expect, it } from "vitest"
 import fs from "fs"
 import combo from "../src"
 import { resolvePageComponent } from "../src/inertia-helpers"
 import path from "path"
 
-vi.mock("fs", async () => {
-    const actual = await vi.importActual<typeof import("fs")>("fs")
-
-    return {
-        default: {
-            ...actual,
-            existsSync: (path: string) =>
-                [
-                    "app/Livewire/",
-                    "app/View/Components/",
-                    "resources/views/",
-                    "lang/",
-                    "routes/",
-                ].includes(path) || actual.existsSync(path),
-        },
-    }
-})
-
 describe("vite-plugin-combo", () => {
-    afterEach(() => {
-        vi.clearAllMocks()
-    })
-
     it("handles missing configuration", () => {
         /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
         /* @ts-ignore */
