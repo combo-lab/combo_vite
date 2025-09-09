@@ -7,15 +7,15 @@ defmodule Combo.Vite.Manifest do
 
   @type raw :: binary()
 
-  @type key :: String.t()
+  @type name :: String.t()
   @type chunk :: Chunk.t()
-  @type t :: %{optional(key()) => chunk()}
+  @type t :: %{optional(name()) => chunk()}
 
   @spec parse(raw) :: t()
   def parse(binary) when is_binary(binary) do
     chunks_map = JSON.decode!(binary)
 
-    Map.new(chunks_map, fn {key, chunk} ->
+    Map.new(chunks_map, fn {name, chunk} ->
       chunk = %Chunk{
         src: Map.get(chunk, "src", nil),
         file: Map.fetch!(chunk, "file"),
@@ -29,46 +29,46 @@ defmodule Combo.Vite.Manifest do
         dynamic_imports: Map.get(chunk, "dynamicImports", [])
       }
 
-      {key, chunk}
+      {name, chunk}
     end)
   end
 
-  @spec fetch_chunk!(t(), key()) :: chunk()
-  def fetch_chunk!(%{} = manifest, key) do
-    Map.fetch!(manifest, key)
+  @spec fetch_chunk!(t(), name()) :: chunk()
+  def fetch_chunk!(%{} = manifest, name) do
+    Map.fetch!(manifest, name)
   end
 
-  @spec fetch_imported_chunks!(t(), key()) :: [chunk()]
-  def fetch_imported_chunks!(%{} = manifest, key) do
-    chunk = fetch_chunk!(manifest, key)
+  @spec fetch_imported_chunks!(t(), name()) :: [chunk()]
+  def fetch_imported_chunks!(%{} = manifest, name) do
+    chunk = fetch_chunk!(manifest, name)
 
     imports = chunk.imports
     chunks = []
-    chunk_keys = MapSet.new()
+    chunk_names = MapSet.new()
     stack = []
 
-    # collect imported chunks in the deep-first way
-    dfc(imports, chunks, chunk_keys, stack, manifest)
+    # dfc (Deep First Collect) - collect imported chunks in a deep-first way
+    dfc(imports, chunks, chunk_names, stack, manifest)
   end
 
-  defp dfc([], chunks, _chunk_keys, [], _manifest) do
+  defp dfc([], chunks, _chunk_names, [], _manifest) do
     Enum.reverse(chunks)
   end
 
-  defp dfc([], chunks, chunk_keys, [[key | rest_imports] | stack], manifest) do
-    chunk = fetch_chunk!(manifest, key)
+  defp dfc([], chunks, chunk_names, [[name | rest_imports] | stack], manifest) do
+    chunk = fetch_chunk!(manifest, name)
     new_chunks = [chunk | chunks]
-    new_chunk_keys = MapSet.put(chunk_keys, key)
-    dfc(rest_imports, new_chunks, new_chunk_keys, stack, manifest)
+    new_chunk_names = MapSet.put(chunk_names, name)
+    dfc(rest_imports, new_chunks, new_chunk_names, stack, manifest)
   end
 
-  defp dfc([key | rest_imports] = imports, chunks, chunk_keys, stack, manifest) do
-    if MapSet.member?(chunk_keys, key) do
-      dfc(rest_imports, chunks, chunk_keys, stack, manifest)
+  defp dfc([name | rest_imports] = imports, chunks, chunk_names, stack, manifest) do
+    if MapSet.member?(chunk_names, name) do
+      dfc(rest_imports, chunks, chunk_names, stack, manifest)
     else
-      chunk = fetch_chunk!(manifest, key)
+      chunk = fetch_chunk!(manifest, name)
       new_stack = [imports | stack]
-      dfc(chunk.imports, chunks, chunk_keys, new_stack, manifest)
+      dfc(chunk.imports, chunks, chunk_names, new_stack, manifest)
     end
   end
 end
