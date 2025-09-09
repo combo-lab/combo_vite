@@ -16,7 +16,7 @@ import {
 } from "vite"
 import fullReload, { Config as FullReloadConfig } from "vite-plugin-full-reload"
 
-interface PluginConfig {
+interface UserPluginConfig {
     /**
      * The path or paths of the entries.
      */
@@ -74,6 +74,17 @@ interface PluginConfig {
     transformOnServe?: (code: string, url: DevServerUrl) => string
 }
 
+interface PluginConfig {
+    input: Rollup.InputOption
+    staticDir: string
+    buildDir: string
+    ssrInput: Rollup.InputOption
+    ssrOutDir: string
+    hotFile: string
+    refresh: boolean | string | string[] | RefreshConfig | RefreshConfig[]
+    transformOnServe: (code: string, url: DevServerUrl) => string
+}
+
 interface RefreshConfig {
     paths: string[]
     config?: FullReloadConfig
@@ -96,8 +107,8 @@ const logger = createLogger("info", {
  *
  * @param config - A config object or relative path(s) of the scripts to be compiled.
  */
-export default function combo(config: PluginConfig): [ComboPlugin, ...Plugin[]] {
-    const pluginConfig = resolvePluginConfig(config)
+export default function combo(config: UserPluginConfig): [ComboPlugin, ...Plugin[]] {
+    const pluginConfig = resolveUserPluginConfig(config)
 
     return [
         resolveComboPlugin(pluginConfig),
@@ -108,7 +119,7 @@ export default function combo(config: PluginConfig): [ComboPlugin, ...Plugin[]] 
 /**
  * Convert the users configuration into a standard structure with defaults.
  */
-function resolvePluginConfig(config: PluginConfig): Required<PluginConfig> {
+function resolveUserPluginConfig(config: UserPluginConfig): Required<PluginConfig> {
     if (typeof config === "undefined") {
         throw new Error("vite-plugin-combo: missing configuration.")
     }
