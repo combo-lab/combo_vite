@@ -150,18 +150,24 @@ function resolveUserPluginConfig(config: UserPluginConfig): Required<PluginConfi
         config.ssrOutDir = config.ssrOutDir.trim().replace(/^\/+/, "").replace(/\/+$/, "")
     }
 
+    const input = config.input
     const staticDir = config.staticDir ?? "../priv/static"
+    const buildDir = config.buildDir ?? "build"
+    const ssrInput = config.ssrInput ?? config.input
     const ssrOutDir = config.ssrOutDir ?? "../priv/ssr"
+    const hotFile = path.join(staticDir, config.hotFile ?? "__hot__")
+    const refresh = config.refresh ?? []
+    const transformOnServe = config.transformOnServe ?? ((code) => code)
 
     return {
-        input: config.input,
+        input: input,
         staticDir: staticDir,
-        buildDir: config.buildDir ?? "build",
-        ssrInput: config.ssrInput ?? config.input,
+        buildDir: buildDir,
+        ssrInput: ssrInput,
         ssrOutDir: ssrOutDir,
-        hotFile: config.hotFile ?? path.join(staticDir, "__hot__"),
-        refresh: config.refresh ?? [],
-        transformOnServe: config.transformOnServe ?? ((code) => code),
+        hotFile: hotFile,
+        refresh: refresh,
+        transformOnServe: transformOnServe,
     }
 }
 
