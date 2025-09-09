@@ -227,7 +227,7 @@ defmodule Combo.Vite.Components do
     if running_hot?(config) do
       to_dev_server_url(name, config)
     else
-      manifest = manifest_file(config) |> File.read!() |> Manifest.parse()
+      manifest = fetch_manifest!(config)
       chunk = Manifest.fetch_chunk!(manifest, name)
       to_static_url(chunk.file, config)
     end
@@ -250,7 +250,7 @@ defmodule Combo.Vite.Components do
   def vite_content(name, config) do
     name = remove_leading_slash(name)
 
-    manifest = manifest_file(config) |> File.read!() |> Manifest.parse()
+    manifest = fetch_manifest!(config)
     # throw error if file not found
 
     chunk = Manifest.fetch_chunk!(manifest, name)
@@ -288,7 +288,7 @@ defmodule Combo.Vite.Components do
   ## For production mode
 
   defp vite_on_manifest(%{names: _names, config: config} = assigns) do
-    manifest = manifest_file(config) |> File.read!() |> Manifest.parse()
+    manifest = fetch_manifest!(config)
     assigns = assign(assigns, :manifest, manifest)
 
     ~CE"""
@@ -299,7 +299,7 @@ defmodule Combo.Vite.Components do
   end
 
   defp vite_on_manifest(%{name: _name, config: config} = assigns) do
-    manifest = manifest_file(config) |> File.read!() |> Manifest.parse()
+    manifest = fetch_manifest!(config)
     assigns = assign(assigns, :manifest, manifest)
 
     ~CE"""
@@ -355,6 +355,21 @@ defmodule Combo.Vite.Components do
 
   defp running_hot?(config), do: File.exists?(hot_file(config))
 
+  defp fetch_manifest!(config) do
+    manifest_file = manifest_file(config)
+    key = {__MODULE__, :manifest, manifest_file}
+
+    case :persistent_term.get(key, nil) do
+      nil ->
+        manifest = manifest_file |> File.read!() |> Manifest.parse()
+        :persistent_term.put(key, manifest)
+        manifest
+
+      manifest ->
+        manifest
+    end
+  end
+
   attr :file, :string, required: true
   attr :to_url, {:fun, 2}, required: true
   attr :config, :map, required: true
@@ -374,25 +389,4 @@ defmodule Combo.Vite.Components do
   defp is_css(name) do
     Regex.match?(~r/\.(css|less|sass|scss|styl|stylus|pcss|postcss)(\?[^\.]*)?$/, name)
   end
-
-  # defp cache_manifest(file) do
-  #   key = {__MODULE__, file}
-
-  #   case :persistent_term.get(key, nil) do
-  #     nil ->
-  #       manifest = file |> File.read!() |> Manifest.parse()
-  #       :persistent_term.put(key, manifest)
-  #       manifest
-
-  #     manifest ->
-  #       manifest
-  #   end
-  # end
-
-  # @doc """
-  # Clear the cache of manifest file manually.
-  # """
-  # def clear_manifest_cache(file) do
-  #   :persistent_term.erase({__MODULE__, file})
-  # end
 end
