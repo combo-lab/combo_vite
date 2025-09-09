@@ -72,19 +72,6 @@ defmodule Combo.Vite.Components do
   alias Combo.Vite.Manifest
 
   defmacro __using__(opts) do
-    # opts =
-    #   if Keyword.keyword?(opts) do
-    #     for {k, v} <- opts do
-    #       if Macro.quoted_literal?(v) do
-    #         {k, Macro.prewalk(v, &expand_alias(&1, __CALLER__))}
-    #       else
-    #         {k, v}
-    #       end
-    #     end
-    #   else
-    #     opts
-    #   end
-
     config_ast = build_config_ast(opts)
 
     quote do
@@ -145,14 +132,15 @@ defmodule Combo.Vite.Components do
     hot_filename = Keyword.get(opts, :hot_filename, "__hot__")
     manifest_filename = Keyword.get(opts, :manifest_filename, "manifest.json")
 
-    {:%{}, [],
-     [
-       endpoint: endpoint,
-       static_dir: static_dir,
-       build_dir: build_dir,
-       hot_filename: hot_filename,
-       manifest_filename: manifest_filename
-     ]}
+    config = %{
+      endpoint: endpoint,
+      static_dir: static_dir,
+      build_dir: build_dir,
+      hot_filename: hot_filename,
+      manifest_filename: manifest_filename
+    }
+
+    Macro.escape(config)
   end
 
   defp read_path_opt!(opts, name) do
