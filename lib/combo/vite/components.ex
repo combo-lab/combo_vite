@@ -4,7 +4,7 @@ defmodule Combo.Vite.Components do
 
   ## Usage
 
-  Add following code into the html_helpers function of your endpoint:
+  Add following code into the `html_helpers/0` function of your endpoint:
 
       defmodule Demo.Web do
         # ...
@@ -157,7 +157,7 @@ defmodule Combo.Vite.Components do
   ```
   """
   attr :names, :string, required: true
-  attr :config, :map, required: true
+  attr :config, :map, required: true, doc: false
 
   def vite_assets(%{names: names, config: config} = assigns) do
     names = Enum.map(names, &remove_leading_slash/1)
@@ -181,7 +181,7 @@ defmodule Combo.Vite.Components do
   ```
   """
   attr :name, :string, required: true
-  attr :config, :map, required: true
+  attr :config, :map, required: true, doc: false
 
   def vite_asset(%{name: name, config: config} = assigns) do
     name = remove_leading_slash(name)
@@ -197,7 +197,7 @@ defmodule Combo.Vite.Components do
 
   > Note that the script is generated only when the dev server is running.
   """
-  attr :config, :map, required: true
+  attr :config, :map, required: true, doc: false
   attr :rest, :global
 
   def vite_react_refresh(assigns) do
