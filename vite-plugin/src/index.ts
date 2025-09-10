@@ -190,7 +190,6 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
             userConfig = config
             const ssr = !!userConfig.build?.ssr
             const env = loadEnv(mode, userConfig.envDir || process.cwd(), "")
-            const serverConfig = command === "serve" ? resolveServerConfigFromEnv(env) : undefined
 
             return {
                 base:
@@ -220,21 +219,6 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
                             ...(env.APP_URL ? [env.APP_URL] : []),
                         ],
                     },
-                    ...(serverConfig
-                        ? {
-                              host: userConfig.server?.host ?? serverConfig.host,
-                              hmr:
-                                  userConfig.server?.hmr === false
-                                      ? false
-                                      : {
-                                            ...serverConfig.hmr,
-                                            ...(userConfig.server?.hmr === true
-                                                ? {}
-                                                : userConfig.server?.hmr),
-                                        },
-                              https: userConfig.server?.https ?? serverConfig.https,
-                          }
-                        : undefined),
                 },
                 resolve: {
                     alias: Array.isArray(userConfig.resolve?.alias)
@@ -457,55 +441,6 @@ function noExternalInertiaHelpers(config: UserConfig): true | Array<string | Reg
         ...(Array.isArray(userNoExternal) ? userNoExternal : [userNoExternal]),
         ...pluginNoExternal,
     ]
-}
-
-/**
- * Resolve the server config from the environment.
- */
-function resolveServerConfigFromEnv(env: Record<string, string>):
-    | {
-          hmr?: { host: string }
-          host?: string
-          https?: { cert: Buffer; key: Buffer }
-      }
-    | undefined {
-    if (!env.VITE_DEV_SERVER_KEY && !env.VITE_DEV_SERVER_CERT) {
-        return
-    }
-
-    if (!fs.existsSync(env.VITE_DEV_SERVER_KEY) || !fs.existsSync(env.VITE_DEV_SERVER_CERT)) {
-        throw Error(
-            `Unable to find the certificate files specified in your environment. Ensure you have correctly configured VITE_DEV_SERVER_KEY: [${env.VITE_DEV_SERVER_KEY}] and VITE_DEV_SERVER_CERT: [${env.VITE_DEV_SERVER_CERT}].`,
-        )
-    }
-
-    const host = resolveHostFromEnv(env)
-
-    if (!host) {
-        throw Error(
-            `Unable to determine the host from the environment's APP_URL: [${env.APP_URL}].`,
-        )
-    }
-
-    return {
-        hmr: { host },
-        host,
-        https: {
-            key: fs.readFileSync(env.VITE_DEV_SERVER_KEY),
-            cert: fs.readFileSync(env.VITE_DEV_SERVER_CERT),
-        },
-    }
-}
-
-/**
- * Resolve the host name from the environment.
- */
-function resolveHostFromEnv(env: Record<string, string>): string | undefined {
-    try {
-        return new URL(env.APP_URL).host
-    } catch {
-        return
-    }
 }
 
 /**
