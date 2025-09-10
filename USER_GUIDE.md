@@ -4,7 +4,7 @@
 > [Asset Bundling (Vite)](https://laravel.com/docs/12.x/vite) by Laravel team.
 
 > The following documentation discusses how to manually install and configure `Combo.Vite`.
-> However, Combo's project generator - combo_new, already includes all of this scaffolding and are the fastest way to get started with Combo and Vite.
+> However, Combo's project generator - [combo_new](https://github.com/combo-team/combo_new), already includes all of this scaffolding and are the fastest way to get started with Combo and Vite.
 
 ## Introduction
 
@@ -23,7 +23,7 @@ Vite is a modern frontend build tool that provides a fast development environmen
 
 You must ensure that Node.js (20+) and NPM are installed:
 
-```console
+```
 $ node -v
 $ npm -v
 ```
@@ -32,13 +32,15 @@ $ npm -v
 
 Install it as a development dependency of your `package.json`:
 
-```console
+```
 $ npm install --save-dev vite-plugin-combo
 ```
 
 ### Setting up `vite-plugin-combo`
 
-Vite is configured via a `vite.config.js` file in the `assets/` directory of your project. You are free to customize this file based on your needs, and you may also install any other plugins your application requires, such as `@vitejs/plugin-react` or `@vitejs/plugin-vue`.
+<a name="configuring-vite-plugin"></a>
+
+Vite is configured via a `vite.config.js` configuration file in the `assets/` directory of your project. You are free to customize this file based on your needs, and you may also install any other plugins your application requires, such as `@vitejs/plugin-react` or `@vitejs/plugin-vue`.
 
 `vite-plugin-combo` requires you to specify the entry points for your application. These may be CSS or JavaScript files, and include preprocessed languages such as TypeScript, JSX, TSX, and Sass.
 
@@ -57,14 +59,17 @@ export default defineConfig({
 
 If you are building an SPA, including applications built using Inertia, Vite works best without CSS entry points:
 
-```js
+```diff
 import { defineConfig } from "vite"
 import combo from "vite-plugin-combo"
 
 export default defineConfig({
   plugins: [
     combo({
-      input: ["src/js/app.js"],
+      input: [
+-        "src/css/app.css",
++        "src/js/app.js",
+      ],
     }),
   ],
 })
@@ -72,15 +77,17 @@ export default defineConfig({
 
 Instead, you should import your CSS via JavaScript. Typically, this would be done in your application's `src/js/app.js` file:
 
-```js
-import "../css/app.css"
+```diff
++ import "../css/app.css"
 ```
 
 The `vite-plugin-combo` also supports multiple entry points and advanced configuration options such as [SSR entry points](#ssr).
 
 #### Working with a secure development server
 
-If your local development web server is serving your application via HTTPS, you may run into issues connecting to the Vite development server. In this case, you should generate a trusted certificate and manually configure Vite to use the generated certificates:
+If your local development web server is serving your application via HTTPS, due to [the browser's mixed content policy](https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content), you may run into issues connecting to the Vite development server. In this case, you should also configure Vite to serve assets via HTTPS.
+
+If you can generate a trusted certificate, you can manually configure Vite to use the generated certificates:
 
 ```js
 // ...
@@ -101,7 +108,7 @@ export default defineConfig({
 })
 ```
 
-If you are unable to generate a trusted certificate for your system, you may install and configure the [@vitejs/plugin-basic-ssl](https://github.com/vitejs/vite-plugin-basic-ssl) plugin. When using untrusted certificates, you will need to accept the certificate warning for Vite development server in your browser by following the "Local" link in your console when running the `npm run dev` command.
+If you are unable to generate a trusted certificate, you can try to install and configure the [@vitejs/plugin-basic-ssl](https://github.com/vitejs/vite-plugin-basic-ssl) plugin. When using untrusted certificates, you will need to accept the certificate warning for Vite development server in your browser by following the "Local" link in your console when running the `npm run dev` command.
 
 ### Installing `Combo.Vite`
 
@@ -119,7 +126,7 @@ And, install it by running `mix deps.get`.
 
 ### Setting up `Combo.Vite`
 
-Add following code into the `html_helpers/0` function of your endpoint.
+Add following code into the `html_helpers/0` function of your endpoint:
 
 ```elixir
 defmodule Demo.Web do
@@ -174,7 +181,7 @@ If you're importing your CSS via JavaScript, you only need to reference the Java
 </head>
 ```
 
-In dev mode, the `<.vite_assets>` component will automatically detect the Vite development server and inject the `@vite/client` to enable Hot Module Replacement. In build mode, the component will load your compiled and versioned assets, including any imported CSS.
+In dev mode, the `<.vite_assets />` component will automatically detect the Vite development server and inject the `@vite/client` to enable Hot Module Replacement. In build mode, the component will load the compiled and versioned assets, including any imported CSS.
 
 #### Inline assets
 
@@ -195,15 +202,17 @@ Sometimes it may be necessary to include the raw content of assets rather than l
 
 ## Running Vite
 
-There are two ways you can run Vite. You may run the development server via the `dev` command, which is useful while developing locally. The development server will automatically detect changes to your files and instantly reflect them in any open browser windows.
+There are two ways you can run Vite.
+
+You can run the development server via the `dev` command, which is useful while developing locally. The development server will automatically detect changes to your files and instantly reflect them in any open browser windows.
 
 Or, running the `build` command will version and bundle your application's assets and get them ready for you to deploy to production:
 
-```console
-# Run the Vite development server...
+```
+# Run the Vite development server
 $ npm run dev
 
-# Build and version the assets for production...
+# Build and version the assets for production
 $ npm run build
 ```
 
@@ -243,7 +252,7 @@ export default defineConfig({
 
 If you would like to build your frontend using the [React](https://reactjs.org/) framework, then you will also need to install the `@vitejs/plugin-react` plugin:
 
-```console
+```
 $ npm install --save-dev @vitejs/plugin-react
 ```
 
@@ -266,7 +275,7 @@ export default defineConfig({
 
 You will need to ensure that any files containing JSX have a `.jsx` or `.tsx` extension, remembering to update your entry point, if required.
 
-You will also need to include the additional `<.vite_react_refresh />` component alongside your existing `<.vite_assets>` component.
+You will also need to include the additional `<.vite_react_refresh />` component alongside your existing `<.vite_assets />` component.
 
 ```ceex
 <!DOCTYPE html>
@@ -277,13 +286,13 @@ You will also need to include the additional `<.vite_react_refresh />` component
 </head>
 ```
 
-> The `<.vite_react_refresh>` component must be called before the `<.vite_assets>` component.
+> The `<.vite_react_refresh />` component must be called before the `<.vite_assets />` component.
 
 ### Vue
 
 If you would like to build your frontend using the [Vue](https://vuejs.org/) framework, then you will also need to install the `@vitejs/plugin-vue` plugin:
 
-```console
+```
 $ npm install --save-dev @vitejs/plugin-vue
 ```
 
@@ -327,9 +336,12 @@ export default defineConfig({
 
 When using Vite and referencing assets in your application's HTML, CSS, or JavaScript, there are a couple of caveats to consider.
 
-First, if you reference assets with an absolute path, Vite will not include the asset in the build. Therefore, you should ensure that the asset is available in your public directory. You should avoid using absolute paths when using a [dedicated CSS entrypoint](#configuring-vite) because, during development, browsers will try to load these paths from the Vite development server, where the CSS is hosted, rather than from your public directory.
+First, if you reference assets with an absolute path, Vite will not include the asset in the build. Therefore:
 
-When referencing relative asset paths, you should remember that the paths are relative to the file where they are referenced. Any assets referenced via a relative path will be re-written, versioned, and bundled by Vite.
+- you should ensure that the asset is available in your public directory.
+- you should avoid using absolute paths when using a [dedicated CSS entrypoint](#configuring-vite-plugin) because, during development, browsers will try to load these paths from the Vite development server, where the CSS is hosted, rather than from your public directory.
+
+Second, any assets referenced via a relative path will be re-written, versioned, and bundled by Vite. When referencing relative asset paths, you should remember that the paths are relative to the file where they are referenced.
 
 Consider the following project structure:
 
@@ -362,7 +374,7 @@ No configuration is required.
 
 ### Tailwind
 
-Inspect the generated projects by `combo_new` to see how Tailwind is configured.
+Please check out the generated projects by `combo_new` to see how Tailwind is configured.
 
 ## Working with CEEx and routes
 
@@ -481,6 +493,8 @@ Related:
 
 ## Server-Side Rendering (SSR)
 
+<a name="ssr"></a>
+
 TODO - https://laravel.com/docs/12.x/vite#ssr
 
 ## Script and Style Tag Attributes
@@ -510,7 +524,7 @@ The easiest way to allow a custom origin for your project is to ensure that your
 APP_URL=http://demo-app.combo
 ```
 
-If you need more fine-grained control over the origins, such as supporting multiple origins, you should utilize [Vite's comprehensive and flexible built-in CORS server configuration](https://vite.dev/config/server-options.html#server-cors). For example, you may specify multiple origins in the `server.cors.origin` configuration option in the project's `vite.config.js` file:
+If you need more fine-grained control over the origins, such as supporting multiple origins, you should utilize [Vite's comprehensive and flexible built-in CORS server configuration](https://vite.dev/config/server-options.html#server-cors). For example, you may specify multiple origins in the `server.cors.origin` configuration option in the project's `vite.config.js` configuration file:
 
 ```js
 import { defineConfig } from "vite"
@@ -557,7 +571,7 @@ For example, the `vite-imagetools` plugin outputs URLs like the following while 
 <img src="/@imagetools/f0b2f404b13f052c604e632f2fb60381bf61a520" />
 ```
 
-The `vite-imagetools` plugin is expecting that the output URL will be intercepted by Vite and the plugin may then handle all URLs that start with `/@imagetools`. If you are using plugins that are expecting this behavior, you will need to manually correct the URLs. You can do this in the `vite.config.js` file by using the `transformOnServe` option.
+The `vite-imagetools` plugin is expecting that the output URL will be intercepted by Vite and the plugin may then handle all URLs that start with `/@imagetools`. If you are using plugins that are expecting this behavior, you will need to manually correct the URLs. You can do this in the `vite.config.js` configuration file by using the `transformOnServe` option.
 
 In this particular example, we will prepend the Vite development server URL to all occurrences of `/@imagetools` within the generated code:
 
