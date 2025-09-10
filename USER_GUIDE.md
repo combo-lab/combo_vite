@@ -44,7 +44,7 @@ Vite is configured via a `vite.config.js` configuration file in the `assets/` di
 
 `vite-plugin-combo` requires you to specify the entry points for your application. These may be CSS or JavaScript files, and include preprocessed languages such as TypeScript, JSX, TSX, and Sass.
 
-```js
+```javascript
 import { defineConfig } from "vite"
 import combo from "vite-plugin-combo"
 
@@ -89,7 +89,7 @@ If your local development web server is serving your application via HTTPS, due 
 
 If you can generate a trusted certificate, you can manually configure Vite to use the generated certificates:
 
-```js
+```javascript
 // ...
 import fs from "fs"
 
@@ -114,7 +114,7 @@ If you are unable to generate a trusted certificate, you can try to install and 
 
 Add follow content to your `package.json`:
 
-```json
+```javascripton
 {
   // ...
   "scripts": {
@@ -196,7 +196,7 @@ After that, the generated components and functions will be available in inline t
 
 If you haven't disabled the [module preload polyfill](https://vite.dev/config/build-options#build-polyfillmodulepreload), you need to import the polyfill in your entry points:
 
-```js
+```javascript
 // add it at the beginning of your src/js/app.js
 import "vite/modulepreload-polyfill"
 ```
@@ -264,7 +264,7 @@ $ npm run build
 
 By default, The `vite-plugin-combo` provides a common alias to help you hit the ground running and conveniently import your application's assets:
 
-```js
+```javascript
 {
   "@": "/src"
 }
@@ -272,7 +272,7 @@ By default, The `vite-plugin-combo` provides a common alias to help you hit the 
 
 You may overwrite the `"@"` alias by adding your own to the `vite.config.js` configuration file:
 
-```js
+```javascript
 import { defineConfig } from "vite"
 import combo from "vite-plugin-combo"
 
@@ -300,7 +300,7 @@ $ npm install --save-dev @vitejs/plugin-react
 
 You may then include the plugin in your `vite.config.js` configuration file:
 
-```js
+```javascript
 import { defineConfig } from "vite"
 import combo from "vite-plugin-combo"
 import react from "@vitejs/plugin-react"
@@ -340,7 +340,7 @@ $ npm install --save-dev @vitejs/plugin-vue
 
 You may then include the plugin in your `vite.config.js` configuration file. There are a few additional options you will need when using the Vue plugin with Combo:
 
-```js
+```javascript
 import { defineConfig } from "vite"
 import combo from "vite-plugin-combo"
 import vue from "@vitejs/plugin-vue"
@@ -428,7 +428,7 @@ When referencing assets in your CSS or JavaScript, Vite automatically processes 
 
 In addition, Vite can also process and version static assets that you reference solely in CEEx templates. However, in order to accomplish this, you need to make Vite aware of your assets by importing the static assets into the application's entry point. For example, if you want to process and version all images stored in `src/images` and all fonts stored in `src/fonts`, you should add the following in your application's `src/js/app.js` entry point:
 
-```js
+```javascript
 import.meta.glob(["../images/**", "../fonts/**"])
 ```
 
@@ -445,7 +445,7 @@ These assets will now be processed by Vite. You can then reference these assets 
 
 `vite-plugin-combo` can refresh the browser when you make changes to specified files in your application. To get started, you can specify the `refresh` option:
 
-```js
+```javascript
 import { defineConfig } from "vite"
 import combo from "vite-plugin-combo"
 
@@ -468,7 +468,7 @@ Then, changing files in above directories will trigger the browser to refresh pa
 
 Under the hood, the `vite-plugin-combo` uses the `vite-plugin-full-reload` package, which offers some advanced configuration options to fine-tune this feature's behavior. If you need this level of customization, you may provide a config definition:
 
-```js
+```javascript
 import { defineConfig } from "vite"
 import combo from "vite-plugin-combo"
 
@@ -522,7 +522,7 @@ DB_PASSWORD=***secret***
 
 Only `VITE_SOME_KEY` will be exposed on `import.meta.env` to your client source code, but `DB_PASSWORD` will not:
 
-```js
+```javascript
 import.meta.env.VITE_SENTRY_DSN_PUBLIC
 ```
 
@@ -562,7 +562,7 @@ If you are experiencing CORS (Cross-Origin Resource Sharing) issues in the brows
 
 If you need more fine-grained control over the origins, you should utilize [Vite's comprehensive and flexible built-in CORS server configuration](https://vite.dev/config/server-options.html#server-cors). For example, if you are visiting your app via `http://demo-app.combo`, you can specify the origin in the `server.cors.origin` configuration option in the project's `vite.config.js` configuration file:
 
-```js
+```javascript
 import { defineConfig } from "vite"
 // ...
 
@@ -579,7 +579,7 @@ export default defineConfig({
 
 You may also include regex patterns, which can be helpful if you would like to allow all origins for a given top-level domain, such as `*.combo`:
 
-```js
+```javascript
 import { defineConfig } from "vite"
 // ...
 
@@ -611,7 +611,7 @@ The `vite-imagetools` plugin is expecting that the output URL will be intercepte
 
 In this particular example, we will prepend the Vite development server URL to all occurrences of `/@imagetools` within the generated code:
 
-```js
+```javascript
 import { defineConfig } from "vite"
 import combo from "vite-plugin-combo"
 import { imagetools } from "vite-imagetools"

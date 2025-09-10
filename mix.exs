@@ -43,7 +43,7 @@ defmodule Combo.Vite.MixProject do
 
   defp docs do
     [
-      extras: ["README.md", "USER_GUIDE.md", "CHANGELOG.md"],
+      extras: ["README.md", "USER_GUIDE.md", "CHANGELOG.md", "LICENSE.txt"],
       main: "readme",
       source_url: @source_url,
       source_ref: "v#{@version}"
