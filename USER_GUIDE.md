@@ -110,6 +110,48 @@ export default defineConfig({
 
 If you are unable to generate a trusted certificate, you can try to install and configure the [@vitejs/plugin-basic-ssl](https://github.com/vitejs/vite-plugin-basic-ssl) plugin. When using untrusted certificates, you will need to accept the certificate warning for Vite development server in your browser by following the "Local" link in your console when running the `npm run dev` command.
 
+### Adding necessary NPM scripts
+
+Add follow content to your `package.json`:
+
+```json
+{
+  // ...
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  }
+  // ...
+}
+```
+
+### Configuring Combo's watcher for Vite
+
+To make Vite start together with `mix combo.serve`, we need to configure Combo watchers:
+
+```elixir
+config :demo, Demo.Web.Endpoint,
+  # ...
+  watchers: [
+    npm: [
+      "run",
+      "dev",
+      cd: Path.expand("../assets", __DIR__)
+    ]
+  ],
+  # ...
+```
+
+### Disabling Combo's builtin versioned assets
+
+Disable it by removing `:cache_static_manifest` configuration of endpoint, because `Combo.Vite` has supported versioned assets.
+
+```diff
+- config :demo, Demo.Web.Endpoint, cache_static_manifest: "priv/static/cache_manifest.json"
+```
+
+And, you don't need to use `mix combo.digest` any more.
+
 ### Installing `Combo.Vite`
 
 Add `:combo_vite` to the list of dependencies in `mix.exs`:
@@ -390,13 +432,11 @@ In addition, Vite can also process and version static assets that you reference 
 import.meta.glob(["../images/**", "../fonts/**"])
 ```
 
-These assets will now be processed by Vite when running `npm run build`. You can then reference these assets in CEEx templates using the `vite_url/1` function, which will return the versioned URL for a given asset:
+These assets will now be processed by Vite. You can then reference these assets in CEEx templates using the `vite_url/1` function, which will return the versioned URL for a given asset:
 
 ```ceex
 <img src={vite_url("src/images/logo.png")} />
 ```
-
-TODO: check if it's supported by `npm run dev`
 
 ### Refreshing on save
 
@@ -451,16 +491,14 @@ export default defineConfig({
 
 Currently not supported, but might be implemented later. PRs are welcome.
 
-Related:
-
-- https://laravel.com/docs/12.x/vite#asset-prefetching
+TODO - https://laravel.com/docs/12.x/vite#asset-prefetching
 
 ## Custom base URLs
 
-If your Vite compiled assets are deployed to a domain separate from your application, such as via a CDN, you must specify the `ASSET_BASE_URL` environment variable before building the assets:
+If your Vite compiled assets are deployed to a domain separate from your application, such as via a CDN, you must specify the `ASSETS_BASE_URL` environment variable before building the assets:
 
 ```
-ASSET_BASE_URL=https://cdn.example.com
+ASSETS_BASE_URL=https://cdn.example.com
 ```
 
 After configuring the base URL, all re-written URLs to your assets will be prefixed with the configured value:
@@ -473,25 +511,28 @@ And, remember that [absolute URLs are not re-written by Vite](#url-processing), 
 
 ## Environment variables
 
-You can inject environment variables into your JavaScript. A good practice is to prefix them with `VITE_`:
+You can inject environment variables into your JavaScript.
+
+To prevent accidentally leaking env variables to the client, only variables prefixed with `VITE_` are exposed to your Vite-processed code. For example, for the following env variables:
 
 ```
 VITE_SENTRY_DSN_PUBLIC=http://example.com
+DB_PASSWORD=***secret***
 ```
 
-Then, you can access injected environment variables via the `import.meta.env` object:
+Only `VITE_SOME_KEY` will be exposed on `import.meta.env` to your client source code, but `DB_PASSWORD` will not:
 
 ```js
 import.meta.env.VITE_SENTRY_DSN_PUBLIC
 ```
 
+Read [the doc of Vite's Env Variables](https://vite.dev/guide/env-and-mode.html#env-variables) for more information.
+
 ## Disabling Vite in tests
 
 Currently not supported, but might be implemented later. PRs are welcome.
 
-Related:
-
-- https://laravel.com/docs/12.x/vite#disabling-vite-in-tests
+TODO - https://laravel.com/docs/12.x/vite#disabling-vite-in-tests
 
 ## Server-Side Rendering (SSR)
 
