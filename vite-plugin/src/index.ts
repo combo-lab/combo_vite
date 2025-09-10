@@ -325,9 +325,9 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
  * Resolve the Vite base option from the environment.
  */
 function resolveBaseFromEnv(config: Required<PluginConfig>, env: Record<string, string>): string {
-    const assetUrl = env.ASSET_BASE_URL ?? ""
-    const suffix = assetUrl.endsWith("/") ? "" : "/"
-    return assetUrl + suffix + config.buildDir + "/"
+    const baseUrl = env.ASSET_BASE_URL ?? ""
+    const suffix = baseUrl.endsWith("/") ? "" : "/"
+    return baseUrl + suffix + config.buildDir + "/"
 }
 
 /**
