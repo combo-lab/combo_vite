@@ -2,9 +2,9 @@
 
 Releases are managed by [@zekedou](https://github.com/zekedou).
 
-1. Update the version number in [package.json](./package.json) and commit it
-2. `rm -rf node_modules package-lock.json`
-3. `npm install`
-4. `npm run build`
-5. `npm publish`
-6. Create a new GitHub release for this version with the release notes
+1. Update `CHANGELOG.md`
+2. Update the version number in [package.json](./package.json) and commit it
+3. `rm -rf node_modules package-lock.json`
+4. `npm install`
+5. `npm run build`
+6. `npm publish`
