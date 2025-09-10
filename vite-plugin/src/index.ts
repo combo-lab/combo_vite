@@ -216,6 +216,7 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
                     cors: userConfig.server?.cors ?? {
                         origin: userConfig.server?.origin ?? [
                             defaultAllowedOrigins,
+                            /^https?:\/\/.*\.test(:\d+)?$/,        // for common conventions used for local development
                             ...(env.APP_URL ? [env.APP_URL] : []),
                         ],
                     },

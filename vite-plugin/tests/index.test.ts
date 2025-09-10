@@ -486,10 +486,19 @@ describe("vite-plugin-combo", () => {
             "https://127.0.0.1",
             "http://127.0.0.1:8000",
             "https://127.0.0.1:8000",
+            // *.test
+            "http://combo.test",
+            "https://combo.test",
+            "http://combo.test:8000",
+            "https://combo.test:8000",
+            "http://my-app.test",
+            "https://my-app.test",
+            "http://my-app.test:8000",
+            "https://my-app.test:8000",
+            "https://my-app.test:8",
             // APP_URL
             "http://example.com",
         ].every((url) => expect(resolvedConfig.server.cors.origin.some((regex) => test(regex, url))).toBe(true))
-
 
         // Disallowed origins...
         ;[

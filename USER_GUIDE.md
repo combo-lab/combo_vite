@@ -501,12 +501,13 @@ If you are experiencing CORS (Cross-Origin Resource Sharing) issues in the brows
 - origins having hostname `*.localhost`
 - origins having hostname `127.0.0.1`
 - origins having hostname `::1`
+- origins having hostname `*.test`
 - origin specified by `APP_URL` environment variable
 
-The easiest way to allow a custom origin for your project is to ensure that your application's `APP_URL` environment variable matches the origin you are visiting in your browser. For example, if you visiting https://demo-app.combo, you should add this environment variable:
+The easiest way to allow a custom origin for your project is to ensure that your application's `APP_URL` environment variable matches the origin you are visiting in your browser. For example, if you visiting http://demo-app.combo, you should add this environment variable:
 
 ```
-APP_URL=https://demo-app.combo
+APP_URL=http://demo-app.combo
 ```
 
 If you need more fine-grained control over the origins, such as supporting multiple origins, you should utilize [Vite's comprehensive and flexible built-in CORS server configuration](https://vite.dev/config/server-options.html#server-cors). For example, you may specify multiple origins in the `server.cors.origin` configuration option in the project's `vite.config.js` file:
