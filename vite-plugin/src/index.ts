@@ -294,7 +294,9 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
                 process.on("SIGTERM", () => process.exit())
                 process.on("SIGHUP", () => process.exit())
 
-                process.stdin.on("close", () => process.exit(0))
+                // Exit process when the stdin is closed.
+                // It's necessary to use Vite with Combo watchers.
+                process.stdin.on("close", () => process.exit())
                 process.stdin.resume()
 
                 exitHandlersBound = true
