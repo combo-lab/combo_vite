@@ -107,6 +107,10 @@ defmodule Combo.Vite.Components do
         unquote(__MODULE__).vite_react_refresh(assigns)
       end
 
+      def vite_mode do
+        unquote(__MODULE__).vite_mode(combo_vite_config())
+      end
+
       def vite_url(name) do
         unquote(__MODULE__).vite_url(name, combo_vite_config())
       end
@@ -246,6 +250,23 @@ defmodule Combo.Vite.Components do
       </script>
     <% end %>
     """
+  end
+
+  @doc """
+  Gets the running mode of Vite.
+
+  Possible values are `:dev` and `:prod`.
+
+  #{@note_on_function}
+
+  ## Examples
+
+      vite_mode() == :dev
+      vite_mode() == :prod
+
+  """
+  def vite_mode(config) do
+    if running_hot?(config), do: :dev, else: :prod
   end
 
   @doc """
