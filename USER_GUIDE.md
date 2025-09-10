@@ -366,7 +366,7 @@ The following example demonstrates how Vite will treat relative and absolute URL
 <img src="../../images/bart.png" />
 ```
 
-## Working with Stylesheet
+## Working with stylesheet
 
 ### CSS
 
@@ -376,7 +376,7 @@ No configuration is required.
 
 Please check out the generated projects by `combo_new` to see how Tailwind is configured.
 
-## Working with routes and templates
+## Working with server-side routes and templates
 
 When your application is built using traditional server-side rendering with CEEx templates, there're several ways to improve your development workflow.
 
