@@ -8,7 +8,7 @@
 
 ## Introduction
 
-Vite is a modern frontend build tool that provides a fast development environment and bundles your code for production. When building applications with Combo, you will typically use Vite to bundle your application's CSS and JS files into production-ready assets.
+[Vite](https://vitejs.dev/) is a modern frontend build tool that provides a fast development environment and bundles your code for production. When building applications with Combo, you will typically use Vite to bundle your application's CSS and JS files into production-ready assets.
 
 `Combo.Vite` integrates seamlessly with Vite by providing:
 
