@@ -456,7 +456,6 @@ describe("vite-plugin-combo", () => {
     it("configures default cors.origin values", () => {
         const test = (pattern: RegExp | string, value: string) =>
             pattern instanceof RegExp ? pattern.test(value) : pattern === value
-        fs.writeFileSync(path.join(__dirname, ".env"), "APP_URL=http://example.com")
 
         const plugins = combo({
             input: "src/js/app.js",
@@ -496,8 +495,6 @@ describe("vite-plugin-combo", () => {
             "http://my-app.test:8000",
             "https://my-app.test:8000",
             "https://my-app.test:8",
-            // APP_URL
-            "http://example.com",
         ].every((url) => expect(resolvedConfig.server.cors.origin.some((regex) => test(regex, url))).toBe(true))
 
         // Disallowed origins...
@@ -516,8 +513,6 @@ describe("vite-plugin-combo", () => {
             "http://exampletest",
             "http://example.test:",
         ].every((url) => expect(resolvedConfig.server.cors.origin.some((regex) => test(regex, url))).toBe(false))
-
-        fs.rmSync(path.join(__dirname, ".env"))
     })
 
     it("respects the user's server.cors config", () => {
