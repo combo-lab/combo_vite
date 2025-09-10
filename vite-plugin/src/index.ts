@@ -397,7 +397,7 @@ function resolveFullReloadConfig({ refresh: config }: Required<PluginConfig>): P
 }
 
 /**
- * Resolve the dev server URL from the server address and configuration.
+ * Resolve the development server URL from the server address and configuration.
  */
 function resolveDevServerUrl(address: AddressInfo, config: ResolvedConfig): DevServerUrl {
     const configHmrProtocol =
