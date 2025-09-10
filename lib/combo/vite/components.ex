@@ -278,28 +278,32 @@ defmodule Combo.Vite.Components do
 
   ## Examples
 
+  Put content into normal tags:
+  ```ceex
+  <div>
+    {raw vite_content("src/images/logo.svg")}
+  </div>
+  ```
+
+  Put content into style and script tags:
+
   ```ceex
   <style>
-    {raw vite_content("src/css/app.css")}
+    <%= raw vite_content("src/css/app.css")} %>
   </style>
   <script>
-    {raw vite_content("src/js/app.js")}
+    <%= raw vite_content("src/js/app.js")} %>
   </script>
   ```
   """
   def vite_content(name, config) do
     name = remove_leading_slash(name)
 
-    manifest = fetch_manifest!(config)
-    # throw error if file not found
-
-    chunk = Manifest.fetch_chunk!(manifest, name)
-    # throw error if chunk not found
-
-    file = Path.join(out_dir(config), chunk.file)
-    # throw error if file not found
-
-    File.read!(file)
+    if running_hot?(config) do
+      read_content_from_dev_server!(name, config)
+    else
+      read_content_from_built_file!(name, config)
+    end
   end
 
   ## For development mode
@@ -323,6 +327,16 @@ defmodule Combo.Vite.Components do
   defp to_dev_server_url(name, config) do
     base_url = fetch_dev_server_base_url!(config)
     Path.join([base_url, name])
+  end
+
+  defp read_content_from_dev_server!(name, config) do
+    base_url = fetch_dev_server_base_url!(config)
+    url = Path.join(base_url, name)
+
+    case :httpc.request(url) do
+      {:ok, {{_, 200, _}, _headers, body}} -> to_string(body)
+      _ -> raise "asset #{name} not found"
+    end
   end
 
   ## For production mode
@@ -382,6 +396,13 @@ defmodule Combo.Vite.Components do
       end
 
     Path.join([base_url, config.build_dir, file])
+  end
+
+  defp read_content_from_built_file!(name, config) do
+    manifest = fetch_manifest!(config)
+    chunk = Manifest.fetch_chunk!(manifest, name)
+    file = Path.join(out_dir(config), chunk.file)
+    File.read!(file)
   end
 
   ## Helpers
