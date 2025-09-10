@@ -260,6 +260,8 @@ defmodule Combo.Vite.Components do
   ```
   """
   def vite_url(name, config) do
+    name = remove_leading_slash(name)
+
     if running_hot?(config) do
       to_dev_server_url(name, config)
     else
