@@ -370,12 +370,14 @@ defmodule Combo.Vite.Components do
   end
 
   defp to_static_url(file, config) do
-    static_url_config = config.endpoint.config(:static_url)
+    static_url_configured? = config.endpoint.config(:static_url)
 
     base_url =
-      if static_url_config,
-        do: struct(URI, static_url_config) |> URI.to_string(),
-        else: "/"
+      if static_url_configured? do
+        config.endpoint.static_url()
+      else
+        "/"
+      end
 
     Path.join([base_url, config.build_dir, file])
   end
