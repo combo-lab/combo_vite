@@ -197,6 +197,7 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
                     (command === "build" ? resolveBaseFromEnv(pluginConfig, env) : ""),
                 publicDir: userConfig.publicDir ?? false,
                 build: {
+                    emptyOutDir: userConfig.build?.emptyOutDir ?? true,
                     manifest: userConfig.build?.manifest ?? (ssr ? false : "manifest.json"),
                     ssrManifest:
                         userConfig.build?.ssrManifest ?? (ssr ? "ssr-manifest.json" : false),
