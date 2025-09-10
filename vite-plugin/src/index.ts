@@ -306,12 +306,15 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
             return () =>
                 server.middlewares.use((req, res, next) => {
                     if (req.url === "/index.html") {
-                        res.statusCode = 404
+                        const statusCode = 404
+
+                        res.statusCode = statusCode
 
                         res.end(
                             fs
                                 .readFileSync(path.join(dirname(), "dev-server-index.html"))
-                                .toString(),
+                                .toString()
+                                .replaceAll("__STATUS_CODE__", statusCode.toString()),
                         )
                     }
 
