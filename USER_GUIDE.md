@@ -376,15 +376,15 @@ No configuration is required.
 
 Please check out the generated projects by `combo_new` to see how Tailwind is configured.
 
-## Working with CEEx and routes
+## Working with routes and templates
 
-When your application is built using traditional server-side rendering with CEEx templates, there're many ways to improve your development workflow.
+When your application is built using traditional server-side rendering with CEEx templates, there're several ways to improve your development workflow.
 
 ### Processing static assets with Vite
 
-When referencing assets in your JavaScript or CSS, Vite automatically processes and versions them.
+When referencing assets in your CSS or JavaScript, Vite automatically processes and versions them.
 
-In addition, Vite can also process and version static assets that you reference solely in CEEx templates. However, in order to accomplish this, you need to make Vite aware of your assets by importing the static assets in the application's entry point. For example, if you want to process and version all images stored in `src/images` and all fonts stored in `src/fonts`, you should add the following in your application's `src/js/app.js` entry point:
+In addition, Vite can also process and version static assets that you reference solely in CEEx templates. However, in order to accomplish this, you need to make Vite aware of your assets by importing the static assets into the application's entry point. For example, if you want to process and version all images stored in `src/images` and all fonts stored in `src/fonts`, you should add the following in your application's `src/js/app.js` entry point:
 
 ```js
 import.meta.glob(["../images/**", "../fonts/**"])
@@ -396,12 +396,14 @@ These assets will now be processed by Vite when running `npm run build`. You can
 <img src={vite_url("src/images/logo.png")} />
 ```
 
+TODO: check if it's supported by `npm run dev`
+
 ### Refreshing on save
 
 > This feature of `vite-plugin-combo` overlaps with that of `Combo.LiveReloader`.
-> When using `vite-plugin-combo`, it is recommended to disable `Combo.LiveReloader`.
+> When using `vite-plugin-combo`, it is preferred to use this feature, instead of `Combo.LiveReloader`.
 
-`vite-plugin-combo` can refresh the browser when you make changes to view files in your application. To get started, you can specify the refresh option:
+`vite-plugin-combo` can refresh the browser when you make changes to specified files in your application. To get started, you can specify the `refresh` option:
 
 ```js
 import { defineConfig } from "vite"
@@ -455,10 +457,10 @@ Related:
 
 ## Custom base URLs
 
-If your Vite compiled assets are deployed to a domain separate from your application, such as via a CDN, you must specify the `ASSET_URL` environment variable before building the assets:
+If your Vite compiled assets are deployed to a domain separate from your application, such as via a CDN, you must specify the `ASSET_BASE_URL` environment variable before building the assets:
 
 ```
-ASSET_URL=https://cdn.example.com
+ASSET_BASE_URL=https://cdn.example.com
 ```
 
 After configuring the base URL, all re-written URLs to your assets will be prefixed with the configured value:
