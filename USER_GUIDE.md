@@ -504,7 +504,7 @@ If you are experiencing CORS (Cross-Origin Resource Sharing) issues in the brows
 - origins having hostname `*.test`
 - origin specified by `APP_URL` environment variable
 
-The easiest way to allow a custom origin for your project is to ensure that your application's `APP_URL` environment variable matches the origin you are visiting in your browser. For example, if you visiting http://demo-app.combo, you should add this environment variable:
+The easiest way to allow a custom origin for your project is to ensure that your application's `APP_URL` environment variable matches the origin you are visiting in your browser. For example, if you visiting `http://demo-app.combo`, you should add this environment variable:
 
 ```
 APP_URL=http://demo-app.combo
@@ -557,7 +557,7 @@ For example, the `vite-imagetools` plugin outputs URLs like the following while 
 <img src="/@imagetools/f0b2f404b13f052c604e632f2fb60381bf61a520" />
 ```
 
-The `vite-imagetools` plugin is expecting that the output URL will be intercepted by Vite and the plugin may then handle all URLs that start with `/@imagetools`. If you are using plugins that are expecting this behavior, you will need to manually correct the URLs. You can do this in your `vite.config.js` file by using the `transformOnServe` option.
+The `vite-imagetools` plugin is expecting that the output URL will be intercepted by Vite and the plugin may then handle all URLs that start with `/@imagetools`. If you are using plugins that are expecting this behavior, you will need to manually correct the URLs. You can do this in the `vite.config.js` file by using the `transformOnServe` option.
 
 In this particular example, we will prepend the Vite development server URL to all occurrences of `/@imagetools` within the generated code:
 
