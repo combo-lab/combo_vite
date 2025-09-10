@@ -70,6 +70,8 @@ defmodule Combo.Vite.Components do
 
   use Combo.HTML
   alias Combo.Vite.Manifest
+  alias Combo.Vite.URLAccessError
+  alias Combo.Vite.FileNotFoundError
 
   defmacro __using__(opts) do
     caller = __CALLER__
@@ -355,8 +357,14 @@ defmodule Combo.Vite.Components do
     url = Path.join(base_url, name)
 
     case :httpc.request(url) do
-      {:ok, {{_, 200, _}, _headers, body}} -> to_string(body)
-      _ -> raise "asset #{name} not found"
+      {:ok, {{_, 200, _}, _headers, body}} ->
+        to_string(body)
+
+      {:ok, {{_, status_code, _}, _headers, _body}} ->
+        raise URLAccessError, {url, status_code: status_code}
+
+      {:error, reason} ->
+        raise URLAccessError, {url, reason: reason}
     end
   end
 
@@ -422,8 +430,8 @@ defmodule Combo.Vite.Components do
   defp read_content_from_built_file!(name, config) do
     manifest = fetch_manifest!(config)
     chunk = Manifest.fetch_chunk!(manifest, name)
-    file = Path.join(out_dir(config), chunk.file)
-    File.read!(file)
+    path = Path.join(out_dir(config), chunk.file)
+    fetch_file_content!(path, config)
   end
 
   ## Helpers
@@ -438,7 +446,7 @@ defmodule Combo.Vite.Components do
 
   defp running_hot?(config) do
     hot_file = hot_file(config)
-    key = {__MODULE__, hot_file, :running_hot?}
+    key = {__MODULE__, config.endpoint, :running_hot?}
 
     cached_fetch!(key, fn ->
       File.exists?(hot_file)
@@ -447,19 +455,36 @@ defmodule Combo.Vite.Components do
 
   defp fetch_dev_server_base_url!(config) do
     hot_file = hot_file(config)
-    key = {__MODULE__, hot_file, :dev_server_base_url}
+    key = {__MODULE__, config.endpoint, :dev_server_base_url}
 
     cached_fetch!(key, fn ->
-      hot_file |> File.read!() |> String.trim()
+      case File.read(hot_file) do
+        {:ok, content} -> String.trim(content)
+        {:error, reason} -> raise FileNotFoundError, {hot_file, reason}
+      end
     end)
   end
 
   defp fetch_manifest!(config) do
     manifest_file = manifest_file(config)
-    key = {__MODULE__, manifest_file, :manifest}
+    key = {__MODULE__, config.endpoint, :manifest}
 
     cached_fetch!(key, fn ->
-      manifest_file |> File.read!() |> Manifest.parse()
+      case File.read(manifest_file) do
+        {:ok, content} -> Manifest.parse(content)
+        {:error, reason} -> raise FileNotFoundError, {manifest_file, reason}
+      end
+    end)
+  end
+
+  defp fetch_file_content!(path, config) do
+    key = {__MODULE__, config.endpoint, :file_content, path}
+
+    cached_fetch!(key, fn ->
+      case File.read(path) do
+        {:ok, content} -> content
+        {:error, reason} -> raise FileNotFoundError, {path, reason}
+      end
     end)
   end
 
