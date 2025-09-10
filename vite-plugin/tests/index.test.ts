@@ -470,51 +470,43 @@ describe("vite-plugin-combo", () => {
         )
 
         // Allowed origins...
-        expect(
-            [
-                // localhost
-                "http://localhost",
-                "https://localhost",
-                "http://localhost:8080",
-                "https://localhost:8080",
-                // 127.0.0.1
-                "http://127.0.0.1",
-                "https://127.0.0.1",
-                "http://127.0.0.1:8000",
-                "https://127.0.0.1:8000",
-                // *.test
-                "http://combo.test",
-                "https://combo.test",
-                "http://combo.test:8000",
-                "https://combo.test:8000",
-                "http://my-app.test",
-                "https://my-app.test",
-                "http://my-app.test:8000",
-                "https://my-app.test:8000",
-                "https://my-app.test:8",
-                // APP_URL
-                "http://example.com",
-                "https://subdomain.my-app.test",
-            ].some((url) => resolvedConfig.server.cors.origin.some((regex) => test(regex, url))),
-        ).toBe(true)
+        ;[
+            // localhost
+            "http://localhost",
+            "https://localhost",
+            "http://localhost:8080",
+            "https://localhost:8080",
+            // *.localhost
+            "http://app.localhost",
+            "https://app.localhost",
+            "http://app.localhost:8080",
+            "https://app.localhost:8080",
+            // 127.0.0.1
+            "http://127.0.0.1",
+            "https://127.0.0.1",
+            "http://127.0.0.1:8000",
+            "https://127.0.0.1:8000",
+            // APP_URL
+            "http://example.com",
+        ].every((url) => expect(resolvedConfig.server.cors.origin.some((regex) => test(regex, url))).toBe(true))
+
+
         // Disallowed origins...
-        expect(
-            [
-                "http://combo.com",
-                "https://combo.com",
-                "http://combo.com:8000",
-                "https://combo.com:8000",
-                "http://128.0.0.1",
-                "https://128.0.0.1",
-                "http://128.0.0.1:8000",
-                "https://128.0.0.1:8000",
-                "https://example.com",
-                "http://example.com:8000",
-                "https://example.com:8000",
-                "http://exampletest",
-                "http://example.test:",
-            ].some((url) => resolvedConfig.server.cors.origin.some((regex) => test(regex, url))),
-        ).toBe(false)
+        ;[
+            "http://combo.com",
+            "https://combo.com",
+            "http://combo.com:8000",
+            "https://combo.com:8000",
+            "http://128.0.0.1",
+            "https://128.0.0.1",
+            "http://128.0.0.1:8000",
+            "https://128.0.0.1:8000",
+            "https://example.com",
+            "http://example.com:8000",
+            "https://example.com:8000",
+            "http://exampletest",
+            "http://example.test:",
+        ].every((url) => expect(resolvedConfig.server.cors.origin.some((regex) => test(regex, url))).toBe(false))
 
         fs.rmSync(path.join(__dirname, ".env"))
     })
