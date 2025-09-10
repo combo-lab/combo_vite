@@ -72,10 +72,19 @@ defmodule Combo.Vite.Components do
   alias Combo.Vite.Manifest
 
   defmacro __using__(opts) do
-    config_ast = build_config_ast(opts)
+    caller = __CALLER__
+
+    opts =
+      if Macro.quoted_literal?(opts) do
+        Macro.prewalk(opts, &expand_alias(&1, caller))
+      else
+        opts
+      end
+
+    config_ast = build_config_ast(opts, caller)
 
     quote do
-      @combo_vite_config unquote(Macro.expand(config_ast, __CALLER__))
+      @combo_vite_config unquote(config_ast)
 
       attr :names, :list, required: true
 
@@ -110,7 +119,10 @@ defmodule Combo.Vite.Components do
     end
   end
 
-  defp build_config_ast(opts) do
+  defp expand_alias({:__aliases__, _, _} = alias, env), do: Macro.expand(alias, env)
+  defp expand_alias(other, _env), do: other
+
+  defp build_config_ast(opts, env) do
     known_keys = [:endpoint, :static_dir, :build_dir, :hot_filename, :manifest_filename]
     required_keys = [:endpoint, :static_dir]
 
@@ -140,7 +152,7 @@ defmodule Combo.Vite.Components do
       manifest_filename: manifest_filename
     }
 
-    Macro.escape(config)
+    Macro.expand(Macro.escape(config), env)
   end
 
   defp read_path_opt!(opts, name) do
