@@ -507,7 +507,7 @@ defmodule Combo.Vite.Components do
 
   defp tag(assigns) do
     ~CE"""
-    <%= if is_css(@file) do %>
+    <%= if css?(@file) do %>
       <link rel="stylesheet" href={apply(@to_url, [@file, @config])} {@rest} />
     <% else %>
       <script type="module" src={apply(@to_url, [@file, @config])} {@rest}>
@@ -516,7 +516,7 @@ defmodule Combo.Vite.Components do
     """
   end
 
-  defp is_css(name) do
+  defp css?(name) do
     Regex.match?(~r/\.(css|less|sass|scss|styl|stylus|pcss|postcss)(\?[^\.]*)?$/, name)
   end
 end
