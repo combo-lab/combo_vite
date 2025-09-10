@@ -211,8 +211,8 @@ describe("vite-plugin-combo", () => {
         expect(ssrConfig.build.rollupOptions.input).toBe("src/js/ssr.js")
     })
 
-    it("prefixes the base with ASSET_BASE_URL in production mode", () => {
-        process.env.ASSET_BASE_URL = "http://example.com"
+    it("prefixes the base with ASSETS_BASE_URL in production mode", () => {
+        process.env.ASSETS_BASE_URL = "http://example.com"
         const plugin = combo({
             input: "src/js/app.js"
         })[0]
@@ -223,7 +223,7 @@ describe("vite-plugin-combo", () => {
         const prodConfig = plugin.config({}, { command: "build", mode: "production" })
         expect(prodConfig.base).toBe("http://example.com/build/")
 
-        delete process.env.ASSET_BASE_URL
+        delete process.env.ASSETS_BASE_URL
     })
 
     it("prevents setting an empty staticDir", () => {
