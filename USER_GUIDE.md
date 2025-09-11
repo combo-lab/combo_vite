@@ -28,13 +28,67 @@ $ node -v
 $ npm -v
 ```
 
+### Installing `Combo.Vite`
+
+Add `:combo_vite` to the list of dependencies in `mix.exs`:
+
+```elixir
+def deps do
+  [
+    {:combo_vite, "<requirement>"}
+  ]
+end
+```
+
+And, install it by running `mix deps.get`.
+
+### Setting up `Combo.Vite`
+
+Add following code into the `html_helpers/0` function of your endpoint:
+
+```elixir
+defmodule Demo.Web do
+  # ...
+
+  defp html_helpers do
+    quote do
+      # ...
+
+      use Combo.Vite.Components,
+        endpoint: Demo.Web.Endpoint,
+        static_dir: {:demo, "priv/static"}
+
+      # ...
+    end
+  end
+
+  # ...
+end
+```
+
+After that, the generated components and functions will be available in inline templates and template files.
+
 ### Installing `vite-plugin-combo`
 
-Install it as a development dependency of your `package.json`:
+Add `vite-plugin-combo` as a development dependency of your `package.json`:
+
+```json
+{
+  "devDependencies": {
+    // ...
+    "vite-plugin-combo": "file:../deps/combo_vite/npm-packages/vite-plugin-combo"
+  }
+}
+```
+
+And, install it:
 
 ```
-$ npm install --save-dev vite-plugin-combo
+$ npm run install --install-links
 ```
+
+> By default, NPM packages from local paths are installed by symlinking the local paths, and they will not have their own dependencies installed when `npm install` is ran in current project.
+> We must use `npm install --install-links`, which will install package from local path like installing a package from the registry instead of creating a symlink.
 
 ### Setting up `vite-plugin-combo`
 
@@ -151,46 +205,6 @@ Disable it by removing `:cache_static_manifest` configuration of endpoint, becau
 ```
 
 And, you don't need to use `mix combo.digest` any more.
-
-### Installing `Combo.Vite`
-
-Add `:combo_vite` to the list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:combo_vite, "<requirement>"}
-  ]
-end
-```
-
-And, install it by running `mix deps.get`.
-
-### Setting up `Combo.Vite`
-
-Add following code into the `html_helpers/0` function of your endpoint:
-
-```elixir
-defmodule Demo.Web do
-  # ...
-
-  defp html_helpers do
-    quote do
-      # ...
-
-      use Combo.Vite.Components,
-        endpoint: Demo.Web.Endpoint,
-        static_dir: {:demo, "priv/static"}
-
-      # ...
-    end
-  end
-
-  # ...
-end
-```
-
-After that, the generated components and functions will be available in inline templates and template files.
 
 ### Configuring the entry points
 
