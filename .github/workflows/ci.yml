@@ -55,9 +55,12 @@ jobs:
     - name: Run mix check
       run: mix check
 
-  npm_check:
+  npm_check-vite-plugin-combo:
     name: Node.js ${{ matrix.node }}
     runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: npm-packages/vite-plugin-combo
     strategy:
       matrix:
         node: [20.x, 22.x, latest]
