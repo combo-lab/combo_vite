@@ -56,7 +56,15 @@ defmodule Combo.Vite.MixProject do
       links: %{
         GitHub: @source_url,
         Changelog: @changelog_url
-      }
+      },
+      files: ~w(
+        lib mix.exs README.md LICENSE.txt
+
+        npm-packages/vite-plugin-combo/package.json
+        npm-packages/vite-plugin-combo/dist
+        npm-packages/vite-plugin-combo/README.md
+        npm-packages/vite-plugin-combo/LICENSE.txt
+      )
     ]
   end
 
