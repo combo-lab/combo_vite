@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest"
-import fs from "fs"
 import combo from "../src"
-import { resolvePageComponent } from "../src/inertia-helpers"
-import path from "path"
 
 describe("vite-plugin-combo", () => {
     it("handles missing configuration", () => {
@@ -309,44 +306,6 @@ describe("vite-plugin-combo", () => {
         ])
     })
 
-    it("prevents the Inertia helpers from being externalized", () => {
-        /* eslint-disable @typescript-eslint/ban-ts-comment */
-        const plugin = combo({
-            input: "src/js/app.js"
-        })[0]
-
-        const noSsrConfig = plugin.config(
-            { build: { ssr: true } },
-            { command: "build", mode: "production" },
-        )
-        /* @ts-ignore */
-        expect(noSsrConfig.ssr.noExternal).toEqual(["vite-plugin-combo"])
-
-        /* @ts-ignore */
-        const nothingExternalConfig = plugin.config(
-            { ssr: { noExternal: true }, build: { ssr: true } },
-            { command: "build", mode: "production" },
-        )
-        /* @ts-ignore */
-        expect(nothingExternalConfig.ssr.noExternal).toBe(true)
-
-        /* @ts-ignore */
-        const arrayNoExternalConfig = plugin.config(
-            { ssr: { noExternal: ["foo"] }, build: { ssr: true } },
-            { command: "build", mode: "production" },
-        )
-        /* @ts-ignore */
-        expect(arrayNoExternalConfig.ssr.noExternal).toEqual(["foo", "vite-plugin-combo"])
-
-        /* @ts-ignore */
-        const stringNoExternalConfig = plugin.config(
-            { ssr: { noExternal: "foo" }, build: { ssr: true } },
-            { command: "build", mode: "production" },
-        )
-        /* @ts-ignore */
-        expect(stringNoExternalConfig.ssr.noExternal).toEqual(["foo", "vite-plugin-combo"])
-    })
-
     it("does not configure full reload when refresh is not present", () => {
         const plugins = combo({
             input: "src/js/app.js",
@@ -389,7 +348,6 @@ describe("vite-plugin-combo", () => {
         })
 
         expect(plugins.length).toBe(2)
-        /** @ts-ignore */
         expect(plugins[1].__combo_plugin_config).toEqual({
             paths: ["path/to/watch/**"],
         })
@@ -402,7 +360,6 @@ describe("vite-plugin-combo", () => {
         })
 
         expect(plugins.length).toBe(2)
-        /** @ts-ignore */
         expect(plugins[1].__combo_plugin_config).toEqual({
             paths: ["path/to/watch/**", "another/to/watch/**"],
         })
@@ -418,7 +375,6 @@ describe("vite-plugin-combo", () => {
         })
 
         expect(plugins.length).toBe(2)
-        /** @ts-ignore */
         expect(plugins[1].__combo_plugin_config).toEqual({
             paths: ["path/to/watch/**", "another/to/watch/**"],
             config: { delay: 987 },
@@ -441,12 +397,10 @@ describe("vite-plugin-combo", () => {
         })
 
         expect(plugins.length).toBe(3)
-        /** @ts-ignore */
         expect(plugins[1].__combo_plugin_config).toEqual({
             paths: ["path/to/watch/**"],
             config: { delay: 987 },
         })
-        /** @ts-ignore */
         expect(plugins[2].__combo_plugin_config).toEqual({
             paths: ["another/to/watch/**"],
             config: { delay: 123 },
@@ -533,53 +487,5 @@ describe("vite-plugin-combo", () => {
         )
 
         expect(resolvedConfig.server.cors).toBe(true)
-    })
-})
-
-describe("inertia-helpers", () => {
-    const path = "./__data__/dummy.ts"
-    it("pass glob value to resolvePageComponent", async () => {
-        const file = await resolvePageComponent<{ default: string }>(
-            path,
-            import.meta.glob("./__data__/*.ts"),
-        )
-        expect(file.default).toBe("Dummy File")
-    })
-
-    it("pass eagerly globed value to resolvePageComponent", async () => {
-        const file = await resolvePageComponent<{ default: string }>(
-            path,
-            import.meta.glob("./__data__/*.ts", { eager: true }),
-        )
-        expect(file.default).toBe("Dummy File")
-    })
-
-    it("accepts array of paths", async () => {
-        const file = await resolvePageComponent<{ default: string }>(
-            ["missing-page", path],
-            import.meta.glob("./__data__/*.ts", { eager: true }),
-            path,
-        )
-        expect(file.default).toBe("Dummy File")
-    })
-
-    it("throws an error when a page is not found", async () => {
-        const callback = () =>
-            resolvePageComponent<{ default: string }>(
-                "missing-page",
-                import.meta.glob("./__data__/*.ts"),
-            )
-        await expect(callback).rejects.toThrowError(new Error("Page not found: missing-page"))
-    })
-
-    it("throws an error when a page is not found", async () => {
-        const callback = () =>
-            resolvePageComponent<{ default: string }>(
-                ["missing-page-1", "missing-page-2"],
-                import.meta.glob("./__data__/*.ts"),
-            )
-        await expect(callback).rejects.toThrowError(
-            new Error("Page not found: missing-page-1,missing-page-2"),
-        )
     })
 })

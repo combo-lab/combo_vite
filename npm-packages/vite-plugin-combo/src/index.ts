@@ -8,7 +8,6 @@ import {
     UserConfig,
     ConfigEnv,
     ResolvedConfig,
-    SSROptions,
     PluginOption,
     Rollup,
     defaultAllowedOrigins,
@@ -233,10 +232,7 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
                               ...defaultAliases,
                               ...userConfig.resolve?.alias,
                           },
-                },
-                ssr: {
-                    noExternal: noExternalInertiaHelpers(userConfig),
-                },
+                }
             }
         },
         configResolved(config) {
@@ -421,31 +417,6 @@ function isIpv6(address: AddressInfo): boolean {
         // @ts-ignore-next-line
         address.family === 6
     )
-}
-
-/**
- * Add the Inertia helpers to the list of SSR dependencies that aren't externalized.
- *
- * @see https://vitejs.dev/guide/ssr.html#ssr-externals
- */
-function noExternalInertiaHelpers(config: UserConfig): true | Array<string | RegExp> {
-    /* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-    /* @ts-ignore */
-    const userNoExternal = (config.ssr as SSROptions | undefined)?.noExternal
-    const pluginNoExternal = ["vite-plugin-combo"]
-
-    if (userNoExternal === true) {
-        return true
-    }
-
-    if (typeof userNoExternal === "undefined") {
-        return pluginNoExternal
-    }
-
-    return [
-        ...(Array.isArray(userNoExternal) ? userNoExternal : [userNoExternal]),
-        ...pluginNoExternal,
-    ]
 }
 
 /**

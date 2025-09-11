@@ -7,11 +7,9 @@
         "clean-orphaned-assets": "bin/clean.js"
     },
     "scripts": {
-        "build": "npm run build-plugin && npm run build-inertia-helpers",
-        "build-plugin": "rm -rf dist && npm run build-plugin-types && npm run build-plugin-esm && cp src/dev-server-index.html dist/",
+        "build": "rm -rf dist && npm run build-plugin-types && npm run build-plugin && cp src/dev-server-index.html dist/",
         "build-plugin-types": "tsc --emitDeclarationOnly",
-        "build-plugin-esm": "esbuild src/index.ts --platform=node --format=esm --outfile=dist/index.js",
-        "build-inertia-helpers": "rm -rf inertia-helpers && tsc --project tsconfig.inertia-helpers.json",
+        "build-plugin": "esbuild src/index.ts --platform=node --format=esm --outfile=dist/index.js",
         "lint": "eslint --ext .ts ./src ./tests",
         "test": "vitest run"
     },
@@ -19,16 +17,11 @@
         ".": {
             "types": "./dist/index.d.ts",
             "default": "./dist/index.js"
-        },
-        "./inertia-helpers": {
-            "types": "./inertia-helpers/index.d.ts",
-            "default": "./inertia-helpers/index.js"
         }
     },
     "types": "./dist/index.d.ts",
     "files": [
-        "/dist",
-        "/inertia-helpers"
+        "/dist"
     ],
     "devDependencies": {
         "@eslint/eslintrc": "^3.3.1",
