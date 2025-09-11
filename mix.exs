@@ -61,7 +61,7 @@ defmodule Combo.Vite.MixProject do
         lib mix.exs README.md LICENSE
 
         npm-packages/vite-plugin-combo/package.json
-        npm-packages/vite-plugin-combo/dist
+        npm-packages/vite-plugin-combo/dist/
         npm-packages/vite-plugin-combo/README.md
         npm-packages/vite-plugin-combo/LICENSE
       )
@@ -69,7 +69,11 @@ defmodule Combo.Vite.MixProject do
   end
 
   defp aliases do
-    [publish: ["hex.publish", "tag"], tag: &tag_release/1]
+    [
+      "build-npm-packages": ["cmd --cd npm-packages/vite-plugin-combo npm run build"],
+      publish: ["build-npm-packages", "hex.publish", "tag"],
+      tag: &tag_release/1
+    ]
   end
 
   defp tag_release(_) do
