@@ -5,6 +5,8 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  schedule:
+    - cron: "0 0 * * *"
 
 permissions:
   contents: read
@@ -31,19 +33,58 @@ jobs:
           # - { elixir: '1.16.x', otp: '25.x' }
           # - { elixir: '1.16.x', otp: '24.x' }
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Setup Elixir
       uses: erlef/setup-beam@v1
       with:
         elixir-version: ${{ matrix.elixir }}
         otp-version: ${{ matrix.otp }}
+
     - name: Restore dependencies cache
       uses: actions/cache@v4
       with:
         path: deps
         key: ${{ runner.os }}-elixir_${{ matrix.elixir }}-otp_${{ matrix.otp }}-mix_${{ hashFiles('**/mix.lock') }}
         restore-keys: ${{ runner.os }}-elixir_${{ matrix.elixir }}-otp_${{ matrix.otp }}-mix
+
     - name: Install dependencies
       run: mix deps.get
+
     - name: Run mix check
       run: mix check
+
+  npm_check:
+    name: Node.js ${{ matrix.node }}
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        node: [20.x, 22.x, latest]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js ${{ matrix.node }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node }}
+
+    - name: Restore dependencies cache
+      uses: actions/cache@v4
+      with:
+        path: deps
+        key: ${{ runner.os }}-node_${{ matrix.node }}-npm_${{ hashFiles('**/package-lock.json') }}
+        restore-keys: ${{ runner.os }}-node_${{ matrix.node }}-npm
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Lint
+      run: npm run lint
+
+    - name: Test
+      run: npm test
+
+    - name: Build
+      run: npm run build
