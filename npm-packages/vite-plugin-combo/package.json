@@ -3,9 +3,6 @@
     "description": "The Vite plugin for Combo",
     "version": "0.1.0",
     "type": "module",
-    "bin": {
-        "clean-orphaned-assets": "bin/clean.js"
-    },
     "scripts": {
         "build": "rm -rf dist && npm run build-plugin-types && npm run build-plugin && cp src/dev-server-index.html dist/",
         "build-plugin-types": "tsc --emitDeclarationOnly",
@@ -21,7 +18,10 @@
     },
     "types": "./dist/index.d.ts",
     "files": [
-        "/dist"
+        "package.json",
+        "dist",
+        "README.md",
+        "LICENSE.txt"
     ],
     "devDependencies": {
         "@eslint/eslintrc": "^3.3.1",
