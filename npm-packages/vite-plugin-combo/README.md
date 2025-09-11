@@ -4,3 +4,7 @@
 > and will remain aligned with its future updates.
 >
 > Special thanks to the original author and all contributors.
+
+## License
+
+[MIT](./LICENSE)

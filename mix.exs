@@ -43,7 +43,7 @@ defmodule Combo.Vite.MixProject do
 
   defp docs do
     [
-      extras: ["README.md", "USER_GUIDE.md", "CHANGELOG.md", "LICENSE.txt"],
+      extras: ["README.md", "USER_GUIDE.md", "CHANGELOG.md", "LICENSE"],
       main: "readme",
       source_url: @source_url,
       source_ref: "v#{@version}"
@@ -58,12 +58,12 @@ defmodule Combo.Vite.MixProject do
         Changelog: @changelog_url
       },
       files: ~w(
-        lib mix.exs README.md LICENSE.txt
+        lib mix.exs README.md LICENSE
 
         npm-packages/vite-plugin-combo/package.json
         npm-packages/vite-plugin-combo/dist
         npm-packages/vite-plugin-combo/README.md
-        npm-packages/vite-plugin-combo/LICENSE.txt
+        npm-packages/vite-plugin-combo/LICENSE
       )
     ]
   end

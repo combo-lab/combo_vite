@@ -11,4 +11,4 @@ Read the [User Guide](./USER_GUIDE.md).
 
 ## License
 
-[MIT](./LICENSE.txt)
+[MIT](./LICENSE)
