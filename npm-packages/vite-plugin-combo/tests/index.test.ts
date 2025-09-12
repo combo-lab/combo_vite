@@ -15,7 +15,7 @@ describe('vite-plugin-combo', () => {
   it('accepts input as a string', () => {
     const plugin = combo({
       input: 'src/js/app.ts',
-    })[0]
+    })
 
     const config = plugin.config(
       {},
@@ -33,7 +33,7 @@ describe('vite-plugin-combo', () => {
   it('accepts input as an array', () => {
     const plugin = combo({
       input: ['src/js/app.ts', 'src/js/other.js'],
-    })[0]
+    })
 
     const config = plugin.config(
       {},
@@ -52,7 +52,7 @@ describe('vite-plugin-combo', () => {
     const plugin = combo({
       input: 'src/js/app.ts',
       ssrInput: 'src/js/ssr.ts',
-    })[0]
+    })
 
     const config = plugin.config(
       {},
@@ -71,7 +71,7 @@ describe('vite-plugin-combo', () => {
     const plugin = combo({
       input: ['src/js/app.ts', 'src/js/other.js'],
       ssrInput: ['src/js/ssr.ts', 'src/js/other.js'],
-    })[0]
+    })
 
     const config = plugin.config(
       {},
@@ -90,7 +90,7 @@ describe('vite-plugin-combo', () => {
     const plugin = combo({
       input: { app: 'src/js/entrypoint-csr.js' },
       ssrInput: { ssr: 'src/js/entrypoint-ssr.js' },
-    })[0]
+    })
 
     const config = plugin.config(
       {},
@@ -116,7 +116,7 @@ describe('vite-plugin-combo', () => {
       buildDir: 'other-build',
       ssrInput: 'src/js/ssr.ts',
       ssrOutDir: 'other-ssr-output',
-    })[0]
+    })
 
     const config = plugin.config(
       {},
@@ -140,7 +140,7 @@ describe('vite-plugin-combo', () => {
   it('has a default manifest path', () => {
     const plugin = combo({
       input: 'src/js/app.js',
-    })[0]
+    })
 
     const userConfig = {}
     const config = plugin.config(userConfig, { command: 'build', mode: 'production' })
@@ -150,7 +150,7 @@ describe('vite-plugin-combo', () => {
   it('respects the users config option - build.manifest', () => {
     const plugin = combo({
       input: 'src/js/app.js',
-    })[0]
+    })
 
     const userConfig = { build: { manifest: 'my-custom-manifest.json' } }
     const config = plugin.config(userConfig, { command: 'build', mode: 'production' })
@@ -160,7 +160,7 @@ describe('vite-plugin-combo', () => {
   it('respects users config option - base', () => {
     const plugin = combo({
       input: 'src/js/app.ts',
-    })[0]
+    })
 
     const userConfig = { base: '/foo/' }
     const config = plugin.config(userConfig, { command: 'build', mode: 'production' })
@@ -171,7 +171,7 @@ describe('vite-plugin-combo', () => {
     const plugin = combo({
       input: 'src/js/app.js',
       ssrInput: 'src/js/ssr.js',
-    })[0]
+    })
 
     const config = plugin.config(
       {},
@@ -196,7 +196,7 @@ describe('vite-plugin-combo', () => {
     // This is support users who may want a dedicated Vite config for SSR.
     const plugin = combo({
       input: 'src/js/ssr.js',
-    })[0]
+    })
 
     const ssrConfig = plugin.config(
       { build: { ssr: true } },
@@ -209,7 +209,7 @@ describe('vite-plugin-combo', () => {
     process.env.ASSETS_BASE_URL = 'http://example.com'
     const plugin = combo({
       input: 'src/js/app.js',
-    })[0]
+    })
 
     const devConfig = plugin.config({}, { command: 'serve', mode: 'development' })
     expect(devConfig.base).toBe('')
@@ -221,13 +221,13 @@ describe('vite-plugin-combo', () => {
   })
 
   it('prevents setting an empty staticDir', () => {
-    expect(() => combo({ input: 'src/js/app.js', staticDir: '' })[0]).toThrowError(
+    expect(() => combo({ input: 'src/js/app.js', staticDir: '' })).toThrowError(
       'staticDir must be a directory',
     )
   })
 
   it('prevents setting an empty buildDir', () => {
-    expect(() => combo({ input: 'src/js/app.js', buildDir: '' })[0]).toThrowError(
+    expect(() => combo({ input: 'src/js/app.js', buildDir: '' })).toThrowError(
       'buildDir must be a directory',
     )
   })
@@ -238,7 +238,7 @@ describe('vite-plugin-combo', () => {
       staticDir: '/public/test/',
       buildDir: '/build/test/',
       ssrOutDir: '/ssr-output/test/',
-    })[0]
+    })
 
     const config = plugin.config(
       {},
@@ -257,7 +257,7 @@ describe('vite-plugin-combo', () => {
   it('provides an @ alias by default', () => {
     const plugin = combo({
       input: 'src/js/app.js',
-    })[0]
+    })
 
     const config = plugin.config({}, { command: 'build', mode: 'development' })
 
@@ -267,7 +267,7 @@ describe('vite-plugin-combo', () => {
   it('respects a users existing @ alias', () => {
     const plugin = combo({
       input: 'src/js/app.js',
-    })[0]
+    })
 
     const config = plugin.config(
       {
@@ -286,7 +286,7 @@ describe('vite-plugin-combo', () => {
   it('appends an Alias object when using an alias array', () => {
     const plugin = combo({
       input: 'src/js/app.js',
-    })[0]
+    })
 
     const config = plugin.config(
       {
@@ -303,115 +303,14 @@ describe('vite-plugin-combo', () => {
     ])
   })
 
-  it('does not configure full reload when refresh is not present', () => {
-    const plugins = combo({
-      input: 'src/js/app.js',
-    })
-
-    expect(plugins.length).toBe(1)
-  })
-
-  it('does not configure full reload when refresh is set to undefined', () => {
-    const plugins = combo({
-      input: 'src/js/app.js',
-      refresh: undefined,
-    })
-
-    expect(plugins.length).toBe(1)
-  })
-
-  it('does not configure full reload when refresh is false', () => {
-    const plugins = combo({
-      input: 'src/js/app.js',
-      refresh: false,
-    })
-
-    expect(plugins.length).toBe(1)
-  })
-
-  it('does not configure full reload when refresh is []', () => {
-    const plugins = combo({
-      input: 'src/js/app.js',
-      refresh: [],
-    })
-
-    expect(plugins.length).toBe(1)
-  })
-
-  it('configures full reload when refresh is a single path', () => {
-    const plugins = combo({
-      input: 'src/js/app.js',
-      refresh: 'path/to/watch/**',
-    })
-
-    expect(plugins.length).toBe(2)
-    expect(plugins[1].__combo_plugin_config).toEqual({
-      paths: ['path/to/watch/**'],
-    })
-  })
-
-  it('configures full reload when refresh is an array of paths', () => {
-    const plugins = combo({
-      input: 'src/js/app.js',
-      refresh: ['path/to/watch/**', 'another/to/watch/**'],
-    })
-
-    expect(plugins.length).toBe(2)
-    expect(plugins[1].__combo_plugin_config).toEqual({
-      paths: ['path/to/watch/**', 'another/to/watch/**'],
-    })
-  })
-
-  it('configures full reload when refresh is a complete configuration to proxy', () => {
-    const plugins = combo({
-      input: 'src/js/app.js',
-      refresh: {
-        paths: ['path/to/watch/**', 'another/to/watch/**'],
-        config: { delay: 987 },
-      },
-    })
-
-    expect(plugins.length).toBe(2)
-    expect(plugins[1].__combo_plugin_config).toEqual({
-      paths: ['path/to/watch/**', 'another/to/watch/**'],
-      config: { delay: 987 },
-    })
-  })
-
-  it('configures full reload when refresh is an array of complete configurations to proxy', () => {
-    const plugins = combo({
-      input: 'src/js/app.js',
-      refresh: [
-        {
-          paths: ['path/to/watch/**'],
-          config: { delay: 987 },
-        },
-        {
-          paths: ['another/to/watch/**'],
-          config: { delay: 123 },
-        },
-      ],
-    })
-
-    expect(plugins.length).toBe(3)
-    expect(plugins[1].__combo_plugin_config).toEqual({
-      paths: ['path/to/watch/**'],
-      config: { delay: 987 },
-    })
-    expect(plugins[2].__combo_plugin_config).toEqual({
-      paths: ['another/to/watch/**'],
-      config: { delay: 123 },
-    })
-  })
-
   it('configures default cors.origin values', () => {
     const test = (pattern: RegExp | string, value: string) =>
       pattern instanceof RegExp ? pattern.test(value) : pattern === value
 
-    const plugins = combo({
+    const plugin = combo({
       input: 'src/js/app.js',
     })
-    const resolvedConfig = plugins[0].config(
+    const resolvedConfig = plugin.config(
       { envDir: __dirname },
       {
         mode: '',
@@ -419,8 +318,8 @@ describe('vite-plugin-combo', () => {
       },
     )
 
-        // Allowed origins...
-        ;[
+    // Allowed origins...
+    ;[
       // localhost
       'http://localhost',
       'https://localhost',
@@ -467,10 +366,10 @@ describe('vite-plugin-combo', () => {
   })
 
   it('respects the user\'s server.cors config', () => {
-    const plugins = combo({
+    const plugin = combo({
       input: 'src/js/app.js',
     })
-    const resolvedConfig = plugins[0].config(
+    const resolvedConfig = plugin.config(
       {
         envDir: __dirname,
         server: {

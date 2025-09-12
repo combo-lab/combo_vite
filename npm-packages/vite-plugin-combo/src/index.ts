@@ -8,12 +8,10 @@ import {
   UserConfig,
   ConfigEnv,
   ResolvedConfig,
-  PluginOption,
   Rollup,
   defaultAllowedOrigins,
   createLogger,
 } from 'vite'
-import fullReload, { Config as FullReloadConfig } from 'vite-plugin-full-reload'
 
 interface UserPluginConfig {
   /**
@@ -60,14 +58,6 @@ interface UserPluginConfig {
   hotFile?: string
 
   /**
-     * Configuration for reloading page on file (such as templates) changes.
-     *
-     * {@link https://github.com/ElMassimo/vite-plugin-full-reload}
-     * @default false
-     */
-  refresh?: boolean | string | string[] | RefreshConfig | RefreshConfig[]
-
-  /**
      * Transform the code while serving.
      */
   transformOnServe?: (code: string, url: DevServerUrl) => string
@@ -80,13 +70,7 @@ interface PluginConfig {
   ssrInput: Rollup.InputOption
   ssrOutDir: string
   hotFile: string
-  refresh: boolean | string | string[] | RefreshConfig | RefreshConfig[]
   transformOnServe: (code: string, url: DevServerUrl) => string
-}
-
-interface RefreshConfig {
-  paths: string[]
-  config?: FullReloadConfig
 }
 
 interface ComboPlugin extends Plugin {
@@ -106,13 +90,9 @@ const logger = createLogger('info', {
  *
  * @param config - A config object or relative path(s) of the scripts to be compiled.
  */
-export default function combo(config: UserPluginConfig): [ComboPlugin, ...Plugin[]] {
+export default function combo(config: UserPluginConfig): ComboPlugin {
   const pluginConfig = resolveUserPluginConfig(config)
-
-  return [
-    resolveComboPlugin(pluginConfig),
-    ...(resolveFullReloadConfig(pluginConfig) as Plugin[]),
-  ]
+  return resolveComboPlugin(pluginConfig)
 }
 
 /**
@@ -155,7 +135,6 @@ function resolveUserPluginConfig(config: UserPluginConfig): Required<PluginConfi
   const ssrInput = config.ssrInput ?? config.input
   const ssrOutDir = config.ssrOutDir ?? '../priv/ssr'
   const hotFile = path.join(staticDir, config.hotFile ?? '__hot__')
-  const refresh = config.refresh ?? []
   const transformOnServe = config.transformOnServe ?? (code => code)
 
   return {
@@ -165,7 +144,6 @@ function resolveUserPluginConfig(config: UserPluginConfig): Required<PluginConfi
     ssrInput: ssrInput,
     ssrOutDir: ssrOutDir,
     hotFile: hotFile,
-    refresh: refresh,
     transformOnServe: transformOnServe,
   }
 }
@@ -352,33 +330,6 @@ function resolveOutDir(config: Required<PluginConfig>, ssr: boolean): string | u
   } else {
     return path.join(config.staticDir, config.buildDir)
   }
-}
-
-function resolveFullReloadConfig({ refresh: config }: Required<PluginConfig>): PluginOption[] {
-  if (typeof config === 'boolean') {
-    return []
-  }
-
-  if (typeof config === 'string') {
-    config = [{ paths: [config] }]
-  }
-
-  if (!Array.isArray(config)) {
-    config = [config]
-  }
-
-  if (config.some(c => typeof c === 'string')) {
-    config = [{ paths: config }] as RefreshConfig[]
-  }
-
-  return (config as RefreshConfig[]).flatMap((c) => {
-    const plugin = fullReload(c.paths, c.config)
-
-    /** @ts-ignore */
-    plugin.__combo_plugin_config = c
-
-    return plugin
-  })
 }
 
 /**
