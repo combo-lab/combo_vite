@@ -508,6 +508,7 @@ config :demo, Demo.Web.Endpoint,
 Then, changing files in above directories will trigger the browser to refresh page.
 
 > Watching the `routes.ex` is useful if you are utilizing [Ziggy](https://github.com/tighten/ziggy) to generate route links within your application's frontend.
+> TODO - is it necessary and possible to build a Ziggy-like package for Combo?
 
 ## Asset prefetching
 
