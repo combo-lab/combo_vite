@@ -428,9 +428,47 @@ The following example demonstrates how Vite will treat relative and absolute URL
 
 No configuration is required.
 
-### Tailwind
+### Tailwind CSS
 
-Please check out the generated projects by `combo_new` to see how Tailwind is configured.
+Install Tailwind CSS. Add Vite plugin and its peer dependencies to your `package.json`:
+
+```json
+{
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "tailwindcss": "^4.0.0"
+  }
+}
+```
+
+Configure the Vite plugin. Add the `@tailwindcss/vite` plugin to the `vite.config.js` configuration file:
+
+```diff
+  import { defineConfig } from "vite"
+  import combo from "vite-plugin-combo"
++ import tailwindcss from "@tailwindcss/vite"
+
+  export default defineConfig({
+    plugins: [
+      combo({
+        input: ["src/css/app.css", "src/js/app.js"],
+      }),
++     tailwindcss(),
+    ],
+  })
+```
+
+Import Tailwind CSS. Add an `@import` to `src/css/app.css` that imports Tailwind CSS. Additionally, tell Tailwind CSS to scan some directories for utilities:
+
+```css
+@import "tailwindcss";
+
+@source "../css";
+@source "../js";
+@source "../../../lib/demo/web";
+```
+
+Now, you can start to use Tailwind CSS's utility classes to style your content.
 
 ## Working with server-side routes and templates
 
