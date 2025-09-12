@@ -1,7 +1,7 @@
 defmodule Combo.Vite.MixProject do
   use Mix.Project
 
-  @version "0.2.1"
+  @version "0.3.0"
   @description "Provides Vite integration for Combo."
   @source_url "https://github.com/combo-team/combo_vite"
   @changelog_url "https://github.com/combo-team/combo_vite/blob/v#{@version}/CHANGELOG.md"
