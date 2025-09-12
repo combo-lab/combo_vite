@@ -492,52 +492,22 @@ These assets will now be processed by Vite. You can then reference these assets 
 
 ### Refreshing on save
 
-> This feature of `vite-plugin-combo` overlaps with that of `Combo.LiveReloader`.
-> When using `vite-plugin-combo`, it is preferred to use this feature, instead of `Combo.LiveReloader`.
+Configure `Combo.LiveReloader` to refresh the page when you make changes to specified files:
 
-`vite-plugin-combo` can refresh the browser when you make changes to specified files in your application. To get started, you can specify the `refresh` option:
-
-```javascript
-import { defineConfig } from "vite"
-import combo from "vite-plugin-combo"
-
-export default defineConfig({
-  plugins: [
-    combo({
-      // ...
-      refresh: [
-        "../lib/demo/web/router.ex",
-        "../lib/demo/web/(controllers|layouts|components)/**/*.(ex|ceex)",
-      ],
-    }),
-  ],
-})
+```elixir
+config :demo, Demo.Web.Endpoint,
+  check_origin: false,
+  live_reloader: [
+    patterns: [
+      ~r"lib/demo/web/router\.ex",
+      ~r"lib/demo/web/(controllers|layouts|components)/.*\.(ex|ceex)$"
+    ]
+  ]
 ```
 
-Then, changing files in above directories will trigger the browser to refresh page while you are running `npm run dev`.
+Then, changing files in above directories will trigger the browser to refresh page.
 
 > Watching the `routes.ex` is useful if you are utilizing [Ziggy](https://github.com/tighten/ziggy) to generate route links within your application's frontend.
-
-Under the hood, the `vite-plugin-combo` uses the `vite-plugin-full-reload` package, which offers some advanced configuration options to fine-tune this feature's behavior. If you need this level of customization, you may provide a config definition:
-
-```javascript
-import { defineConfig } from "vite"
-import combo from "vite-plugin-combo"
-
-export default defineConfig({
-  plugins: [
-    combo({
-      // ...
-      refresh: [
-        {
-          paths: ["path/to/watch/**"],
-          config: { delay: 300 },
-        },
-      ],
-    }),
-  ],
-})
-```
 
 ## Asset prefetching
 
