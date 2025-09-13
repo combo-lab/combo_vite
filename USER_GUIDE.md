@@ -4,7 +4,7 @@
 > [Asset Bundling (Vite)](https://laravel.com/docs/12.x/vite) by Laravel team.
 
 > The following documentation discusses how to manually install and configure `Combo.Vite`.
-> However, Combo's project generator - [combo_new](https://github.com/combo-team/combo_new), already includes all of this scaffolding and are the fastest way to get started with Combo and Vite.
+> However, Combo's project generator - [combo_new](https://github.com/combo-lab/combo_new), already includes all of this scaffolding and are the fastest way to get started with Combo and Vite.
 
 ## Introduction
 
