@@ -202,7 +202,7 @@ defmodule Combo.Vite.Components do
   @doc """
   Renders an element for a given asset.
 
-  Different from `vite_assets/1`, it dosen't loads the `@vite/client`. All
+  Different from `vite_assets/1`, it doesn't loads the `@vite/client`. All
   other behaviors are the same.
 
   #{@note_on_component}
