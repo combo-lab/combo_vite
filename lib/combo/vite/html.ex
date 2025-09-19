@@ -1,6 +1,6 @@
-defmodule Combo.Vite.Components do
+defmodule Combo.Vite.HTML do
   @moduledoc """
-  Provides Vite related components.
+  Provides Vite related components and helpers for rendering HTML.
 
   ## Usage
 
@@ -13,7 +13,7 @@ defmodule Combo.Vite.Components do
           quote do
             # ...
 
-            use Combo.Vite.Components,
+            use Combo.Vite.HTML,
               endpoint: Demo.Web.Endpoint,
               static_dir: {:demo, "priv/static"}
 
@@ -24,9 +24,9 @@ defmodule Combo.Vite.Components do
         # ...
       end
 
-  When you `use Combo.Vite.Components, opts`, it will use the given `opts` to
+  When you `use Combo.Vite.HTML, opts`, it will use the given `opts` to
   build config, and generate wrapper components and functions provided by
-  [`Combo.Vite.Components`](#functions).
+  [`Combo.Vite.HTML`](#functions).
 
   ## Options
 
@@ -59,12 +59,12 @@ defmodule Combo.Vite.Components do
   """
 
   @note_on_component """
-  > When you `use Combo.Vite.Components, opts`, a wrapper component that
+  > When you `use Combo.Vite.HTML, opts`, a wrapper component that
   > doesn't require `:config` attr will be generated.
   """
 
   @note_on_function """
-  > When you `use Combo.Vite.Components, opts`, a wrapper function that
+  > When you `use Combo.Vite.HTML, opts`, a wrapper function that
   > doesn't require `config` argument will be generated.
   """
 

@@ -1,3 +1,5 @@
 # Changelog
 
-Nothing for now.
+## Unreleased
+
+- rename `Combo.Vite.Components` to `Combo.Vite.HTML`

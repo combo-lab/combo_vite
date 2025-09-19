@@ -54,7 +54,7 @@ defmodule Demo.Web do
     quote do
       # ...
 
-      use Combo.Vite.Components,
+      use Combo.Vite.HTML,
         endpoint: Demo.Web.Endpoint,
         static_dir: {:demo, "priv/static"}
 
