@@ -3,7 +3,7 @@
 [![CI](https://github.com/combo-lab/combo_vite/actions/workflows/ci.yml/badge.svg)](https://github.com/combo-lab/combo_vite/actions/workflows/ci.yml)
 [![Hex.pm](https://img.shields.io/hexpm/v/combo_vite.svg)](https://hex.pm/packages/combo_vite)
 
-Provides Vite integration for Combo.
+Provides [Vite](https://vitejs.dev/) integration for Combo.
 
 ## Usage
 
