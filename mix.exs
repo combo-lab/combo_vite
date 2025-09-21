@@ -70,8 +70,12 @@ defmodule Combo.Vite.MixProject do
 
   defp aliases do
     [
-      "build-npm-packages": ["cmd --cd npm-packages/vite-plugin-combo npm run build"],
-      publish: ["build-npm-packages", "hex.publish", "tag"],
+      "build-npm-packages": [
+        "cmd --cd npm-packages/vite-plugin-combo npm install",
+        "cmd --cd npm-packages/vite-plugin-combo npm run build"
+      ],
+      build: ["build-npm-packages"],
+      publish: ["build", "hex.publish", "tag"],
       tag: &tag_release/1
     ]
   end
