@@ -561,7 +561,37 @@ TODO - https://laravel.com/docs/12.x/vite#disabling-vite-in-tests
 
 <a name="ssr"></a>
 
-TODO - https://laravel.com/docs/12.x/vite#ssr
+The `vite-plugin-combo` makes it painless to set up server-side rendering with Vite. To get started, create an SSR entry point at `assets/src/js/ssr.js` and specify the entry point by passing a configuration option to the plugin:
+
+```javascript
+import { defineConfig } from "vite"
+import combo from "vite-plugin-combo"
+
+export default defineConfig({
+  plugins: [
+    combo({
+      input: ["src/js/app.js"],
+      ssrInput: ["src/js/ssr.js"],
+    }),
+  ],
+})
+```
+
+To ensure you don't forget to rebuild the SSR entry point, we recommend augmenting the "build" script in your application's `package.json` to create your SSR build:
+
+```diff
+  "scripts": {
+     "dev": "vite",
+-    "build": "vite build"
++    "build": "vite build && vite build --ssr"
+  }
+```
+
+Then, to build it:
+
+```
+$ npm run build
+```
 
 ## Script and Style Tag Attributes
 
