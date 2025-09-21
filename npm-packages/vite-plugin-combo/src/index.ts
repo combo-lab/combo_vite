@@ -176,7 +176,6 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
         build: {
           emptyOutDir: userConfig.build?.emptyOutDir ?? true,
           manifest: userConfig.build?.manifest ?? (ssr ? false : 'manifest.json'),
-          ssrManifest: userConfig.build?.ssrManifest ?? (ssr ? 'ssr-manifest.json' : false),
           outDir: userConfig.build?.outDir ?? resolveOutDir(pluginConfig, ssr),
           rollupOptions: {
             input: userConfig.build?.rollupOptions?.input ?? resolveInput(pluginConfig, ssr),
@@ -205,6 +204,9 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
                 ...defaultAliases,
                 ...userConfig.resolve?.alias,
               },
+        },
+        ssr: {
+          noExternal: userConfig.ssr?.noExternal ?? true,
         },
       }
     },

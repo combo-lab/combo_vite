@@ -384,4 +384,37 @@ describe('vite-plugin-combo', () => {
 
     expect(resolvedConfig.server.cors).toBe(true)
   })
+
+  it('configures default ssr.noExternal value', () => {
+    const plugin = combo({
+      input: 'src/js/app.js',
+    })
+
+    const config = plugin.config(
+      {},
+      { command: 'build', mode: 'production' },
+    )
+    expect(config.ssr.noExternal).toBe(true)
+  })
+
+  it('respects the user\'s ssr.noExternal config', () => {
+    const plugin = combo({
+      input: 'src/js/app.js',
+    })
+    const resolvedConfig = plugin.config(
+      {
+        envDir: __dirname,
+        ssr: {
+          noExternal: false,
+        },
+
+      },
+      {
+        mode: '',
+        command: 'serve',
+      },
+    )
+
+    expect(resolvedConfig.ssr.noExternal).toBe(false)
+  })
 })
