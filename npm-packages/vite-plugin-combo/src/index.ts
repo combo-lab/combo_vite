@@ -15,51 +15,51 @@ import {
 
 interface UserPluginConfig {
   /**
-     * The path or paths of the entries.
-     */
+   * The path or paths of the entries.
+   */
   input: Rollup.InputOption
 
   /**
-     * Combo's public static directory.
-     *
-     * @default '../priv/static'
-     */
+   * Combo's public static directory.
+   *
+   * @default '../priv/static'
+   */
   staticDir?: string
 
   /**
-     * The public static directory's subdirectory where the CSR bundles should be written.
-     *
-     * It parent directory is the directory specified by staticDir.
-     *
-     * @default 'build'
-     *
-     */
+   * The public static directory's subdirectory where the CSR bundles should be written.
+   *
+   * It parent directory is the directory specified by staticDir.
+   *
+   * @default 'build'
+   *
+   */
   buildDir?: string
 
   /**
-     * The path or paths of the SSR entries.
-     */
+   * The path or paths of the SSR entries.
+   */
   ssrInput?: Rollup.InputOption
 
   /**
-     * The directory where the SSR bundles should be written.
-     *
-     * @default '../priv/ssr'
-     */
+   * The directory where the SSR bundles should be written.
+   *
+   * @default '../priv/ssr'
+   */
   ssrOutDir?: string
 
   /**
-     * The file name of the "hot" file.
-     *
-     * It parent directory is the directory specified by staticDir.
-     *
-     * @default '__hot__'
-     */
+   * The file name of the "hot" file.
+   *
+   * It parent directory is the directory specified by staticDir.
+   *
+   * @default '__hot__'
+   */
   hotFile?: string
 
   /**
-     * Transform the code while serving.
-     */
+   * Transform the code while serving.
+   */
   transformOnServe?: (code: string, url: DevServerUrl) => string
 }
 
@@ -170,26 +170,21 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
 
       return {
         base:
-                    userConfig.base
-                    ?? (command === 'build' ? resolveBaseFromEnv(pluginConfig, env) : ''),
+          userConfig.base
+          ?? (command === 'build' ? resolveBaseFromEnv(pluginConfig, env) : ''),
         publicDir: userConfig.publicDir ?? false,
         build: {
           emptyOutDir: userConfig.build?.emptyOutDir ?? true,
           manifest: userConfig.build?.manifest ?? (ssr ? false : 'manifest.json'),
-          ssrManifest:
-                        userConfig.build?.ssrManifest ?? (ssr ? 'ssr-manifest.json' : false),
+          ssrManifest: userConfig.build?.ssrManifest ?? (ssr ? 'ssr-manifest.json' : false),
           outDir: userConfig.build?.outDir ?? resolveOutDir(pluginConfig, ssr),
           rollupOptions: {
-            input:
-                            userConfig.build?.rollupOptions?.input
-                            ?? resolveInput(pluginConfig, ssr),
+            input: userConfig.build?.rollupOptions?.input ?? resolveInput(pluginConfig, ssr),
           },
           assetsInlineLimit: userConfig.build?.assetsInlineLimit ?? 0,
         },
         server: {
-          origin:
-                        userConfig.server?.origin
-                        ?? 'http://__vite_dev_server_host_placeholder__',
+          origin: userConfig.server?.origin ?? 'http://__vite_dev_server_host_placeholder__',
           cors: userConfig.server?.cors ?? {
             origin: userConfig.server?.origin ?? [
               defaultAllowedOrigins,
