@@ -343,7 +343,7 @@ function resolveDevServerUrl(address: AddressInfo, config: ResolvedConfig): DevS
 
   const configHmrHost = typeof config.server.hmr === 'object' ? config.server.hmr.host : null
   const configHost = typeof config.server.host === 'string' ? config.server.host : null
-  const serverAddress = isIpv6(address) ? `[${address.address}]` : address.address
+  const serverAddress = address.family === 'IPv6' ? `[${address.address}]` : address.address
   const host = configHmrHost ?? configHost ?? serverAddress
 
   const configHmrClientPort
@@ -351,16 +351,6 @@ function resolveDevServerUrl(address: AddressInfo, config: ResolvedConfig): DevS
   const port = configHmrClientPort ?? address.port
 
   return `${protocol}://${host}:${port}`
-}
-
-function isIpv6(address: AddressInfo): boolean {
-  return (
-    address.family === 'IPv6'
-    // In node >=18.0 <18.4 this was an integer value. This was changed in a minor version.
-    // See: https://github.com/laravel/vite-plugin/issues/103
-    // @ts-ignore-next-line
-    || address.family === 6
-  )
 }
 
 /**
