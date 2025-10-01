@@ -204,7 +204,7 @@ Disable it by removing `:cache_static_manifest` configuration of endpoint, becau
 - config :demo, Demo.Web.Endpoint, cache_static_manifest: "priv/static/cache_manifest.json"
 ```
 
-And, you don't need to use `mix combo.digest` any more.
+And, you don't need to use `mix combo.static.digest` any more.
 
 ### Configuring the entry points
 
