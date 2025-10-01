@@ -83,7 +83,7 @@ defmodule Combo.Vite.MixProject do
         "cmd --cd npm-packages/vite-plugin-combo npm run build"
       ],
       build: ["compile", "npm-packages.build"],
-      publish: ["build", "hex.publish", "tag"],
+      publish: ["hex.publish", "tag"],
       tag: &tag_release/1
     ]
   end
