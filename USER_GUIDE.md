@@ -47,7 +47,7 @@ And, install it by running `mix deps.get`.
 Add following code into the `html_helpers/0` function of your endpoint:
 
 ```elixir
-defmodule Demo.Web do
+defmodule MyApp.Web do
   # ...
 
   defp html_helpers do
@@ -55,8 +55,8 @@ defmodule Demo.Web do
       # ...
 
       use Combo.Vite.HTML,
-        endpoint: Demo.Web.Endpoint,
-        static_dir: {:demo, "priv/static"}
+        endpoint: MyApp.Web.Endpoint,
+        static_dir: {:my_app, "priv/static"}
 
       # ...
     end
@@ -184,7 +184,7 @@ Add follow content to your `package.json`:
 To make Vite start together with `mix combo.serve`, we need to configure Combo watchers:
 
 ```elixir
-config :demo, Demo.Web.Endpoint,
+config :my_app, MyApp.Web.Endpoint,
   # ...
   watchers: [
     npm: [
@@ -201,7 +201,7 @@ config :demo, Demo.Web.Endpoint,
 Disable it by removing `:cache_static_manifest` configuration of endpoint, because `Combo.Vite` has supported versioned assets.
 
 ```diff
-- config :demo, Demo.Web.Endpoint, cache_static_manifest: "priv/static/cache_manifest.json"
+- config :my_app, MyApp.Web.Endpoint, static: [manifest: "priv/static/manifest.digest.json"]
 ```
 
 And, you don't need to use `mix combo.static.digest` any more.
@@ -465,7 +465,7 @@ Import Tailwind CSS. Add an `@import` to `src/css/app.css` that imports Tailwind
 
 @source "../css";
 @source "../js";
-@source "../../../lib/demo/web";
+@source "../../../lib/my_app/web";
 ```
 
 Now, you can start to use Tailwind CSS's utility classes to style your content.
@@ -495,12 +495,12 @@ These assets will now be processed by Vite. You can then reference these assets 
 Configure `Combo.LiveReloader` to refresh the page when you make changes to specified files:
 
 ```elixir
-config :demo, Demo.Web.Endpoint,
+config :my_app, MyApp.Web.Endpoint,
   check_origin: false,
   live_reloader: [
     patterns: [
-      ~r"lib/demo/web/router\.ex",
-      ~r"lib/demo/web/(controllers|layouts|components)/.*\.(ex|ceex)$"
+      ~r"lib/my_app/web/router\.ex",
+      ~r"lib/my_app/web/(controllers|layouts|components)/.*\.(ex|ceex)$"
     ]
   ]
 ```
@@ -613,7 +613,7 @@ If you are experiencing CORS (Cross-Origin Resource Sharing) issues in the brows
 - origins having hostname `::1`
 - origins having hostname `*.test`
 
-If you need more fine-grained control over the origins, you should utilize [Vite's comprehensive and flexible built-in CORS server configuration](https://vite.dev/config/server-options.html#server-cors). For example, if you are visiting your app via `http://demo-app.combo`, you can specify the origin in the `server.cors.origin` configuration option in the project's `vite.config.js` configuration file:
+If you need more fine-grained control over the origins, you should utilize [Vite's comprehensive and flexible built-in CORS server configuration](https://vite.dev/config/server-options.html#server-cors). For example, if you are visiting your app via `http://my-app.combo`, you can specify the origin in the `server.cors.origin` configuration option in the project's `vite.config.js` configuration file:
 
 ```javascript
 import { defineConfig } from "vite"
@@ -623,7 +623,7 @@ export default defineConfig({
   // ...
   server: {
     cors: {
-      origin: ["http://demo-app.combo"],
+      origin: ["http://my-app.combo"],
     },
   },
   // ...

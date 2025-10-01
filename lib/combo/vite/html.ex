@@ -6,7 +6,7 @@ defmodule Combo.Vite.HTML do
 
   Add following code into the `html_helpers/0` function of your endpoint:
 
-      defmodule Demo.Web do
+      defmodule MyApp.Web do
         # ...
 
         defp html_helpers do
@@ -14,8 +14,8 @@ defmodule Combo.Vite.HTML do
             # ...
 
             use Combo.Vite.HTML,
-              endpoint: Demo.Web.Endpoint,
-              static_dir: {:demo, "priv/static"}
+              endpoint: MyApp.Web.Endpoint,
+              static_dir: {:my_app, "priv/static"}
 
             # ...
           end
