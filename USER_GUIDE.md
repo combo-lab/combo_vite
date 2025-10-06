@@ -470,6 +470,8 @@ Import Tailwind CSS. Add an `@import` to `src/css/app.css` that imports Tailwind
 
 Now, you can start to use Tailwind CSS's utility classes to style your content.
 
+> If legacy browser compatibility is required, consider using Tailwind CSS v3 instead. Refer to the installation guide [here](https://v3.tailwindcss.com/docs/installation/using-postcss).
+
 ## Working with server-side routes and templates
 
 When your application is built using traditional server-side rendering with CEEx templates, there're several ways to improve your development workflow.
