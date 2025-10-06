@@ -1,5 +1,5 @@
 # Changelog
 
-## v0.4.0
+## v0.6.1
 
-- rename `Combo.Vite.Components` to `Combo.Vite.HTML`
+- fix the wrong path when building static url

@@ -416,15 +416,13 @@ defmodule Combo.Vite.HTML do
 
   defp to_static_url(file, config) do
     static_url_configured? = config.endpoint.config(:static_url)
+    path = Path.join(["/", config.build_dir, file])
 
-    base_url =
-      if static_url_configured? do
-        config.endpoint.static_url()
-      else
-        "/"
-      end
-
-    Path.join([base_url, config.build_dir, file])
+    if static_url_configured? do
+      config.endpoint.static_url() <> config.endpoint.static_path(path)
+    else
+      config.endpoint.static_path(path)
+    end
   end
 
   defp read_content_from_built_file!(name, config) do
