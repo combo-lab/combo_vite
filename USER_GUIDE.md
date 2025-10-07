@@ -84,11 +84,14 @@ Add `vite-plugin-combo` as a development dependency of your `package.json`:
 And, install it:
 
 ```
-$ npm run install --install-links
+$ npm install --install-links
 ```
 
-> By default, NPM packages from local paths are installed by symlinking the local paths, and they will not have their own dependencies installed when `npm install` is ran in current project.
+> Why do we need `--install-links`?
+> By default, `npm` installs local NPM packages by symlinking the local paths, and the local NPM packages will not have their own dependencies installed when `npm install` is ran in current project.
 > We must use `npm install --install-links`, which will install package from local path like installing a package from the registry instead of creating a symlink.
+>
+> If you use `pnpm`, you won't have this problem.
 
 ### Setting up `vite-plugin-combo`
 
@@ -198,7 +201,7 @@ config :my_app, MyApp.Web.Endpoint,
 
 ### Disabling Combo's builtin versioned assets
 
-Disable it by removing `:cache_static_manifest` configuration of endpoint, because `Combo.Vite` has supported versioned assets.
+Disable it by removing `:static` configuration of endpoint, because `Combo.Vite` has supported versioned assets.
 
 ```diff
 - config :my_app, MyApp.Web.Endpoint, static: [manifest: "priv/static/manifest.digest.json"]
