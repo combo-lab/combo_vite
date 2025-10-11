@@ -96,7 +96,6 @@ defmodule Combo.Vite.HTML do
   <.vite_react_refresh />
   ```
   """
-  attr :config, :map, required: true
   attr :rest, :global
 
   def vite_react_refresh(assigns) do
