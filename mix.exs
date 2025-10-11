@@ -1,7 +1,7 @@
 defmodule Combo.Vite.MixProject do
   use Mix.Project
 
-  @version "0.6.1"
+  @version "0.7.0"
   @description "Provides Vite integration for Combo."
   @source_url "https://github.com/combo-lab/combo_vite"
   @changelog_url "https://github.com/combo-lab/combo_vite/blob/v#{@version}/CHANGELOG.md"
@@ -30,7 +30,7 @@ defmodule Combo.Vite.MixProject do
 
   defp deps do
     [
-      {:combo, "~> 0.4"},
+      {:combo, "~> 0.5"},
       {:ex_check, ">= 0.0.0", only: [:dev], runtime: false},
       {:credo, ">= 0.0.0", only: [:dev], runtime: false},
       {:dialyxir, ">= 0.0.0", only: [:dev], runtime: false},
