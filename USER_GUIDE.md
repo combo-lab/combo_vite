@@ -42,31 +42,55 @@ end
 
 And, install it by running `mix deps.get`.
 
-### Setting up `Combo.Vite`
+### Setting up necessary modules
 
-Add following code into the `html_helpers/0` function of your endpoint:
+This package includes a few modules:
+
+- `Combo.Vite.Plug`
+- `Combo.Vite.HTML`
+
+First, add `Combo.Vite.Plug` into the browser pipeline:
 
 ```elixir
-defmodule MyApp.Web do
-  # ...
+  # lib/my_app/web/router.ex
+  defmodule MyApp.Web.Router do
+    use MyApp.Web, :router
 
-  defp html_helpers do
-    quote do
+    pipeline :browser do
       # ...
-
-      use Combo.Vite.HTML,
-        endpoint: MyApp.Web.Endpoint,
-        static_dir: {:my_app, "priv/static"}
-
-      # ...
++     plug Combo.Vite.Plug
     end
   end
-
-  # ...
-end
 ```
 
-After that, the generated components and functions will be available in inline templates and template files.
+Then, add `Combo.Vite.HTML` into the html helper:
+
+```elixir
+  defmodule MyApp.Web do
+    defp html_helpers do
+      quote do
+        # ...
+
++       import Combo.Vite.HTML
+      end
+    end
+  end
+```
+
+After that, the components and functions will be available in inline templates and template files.
+
+### Adding configuration
+
+If you'd like to add configuration, add the options like this:
+
+```
+config :my_app, MyApp.Web.Endpoint,
+  vite: [
+    static_dir: {:my_app, "priv/static"}
+  ]
+```
+
+Check out `Combo.Vite` for all available options.
 
 ### Installing `vite-plugin-combo`
 

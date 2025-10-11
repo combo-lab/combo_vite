@@ -4,7 +4,7 @@ defmodule Combo.Vite.HTML do
 
   ## Usage
 
-  Add following code into the `html_helpers/0` function of your endpoint:
+  Add following code into the `html_helpers/0` function:
 
       defmodule MyApp.Web do
         # ...
@@ -13,9 +13,7 @@ defmodule Combo.Vite.HTML do
           quote do
             # ...
 
-            use Combo.Vite.HTML,
-              endpoint: MyApp.Web.Endpoint,
-              static_dir: {:my_app, "priv/static"}
+            import Combo.Vite.HTML
 
             # ...
           end
@@ -24,150 +22,13 @@ defmodule Combo.Vite.HTML do
         # ...
       end
 
-  When you `use Combo.Vite.HTML, opts`, it will use the given `opts` to
-  build config, and generate wrapper components and functions provided by
-  [`Combo.Vite.HTML`](#functions).
-
-  ## Options
-
-    * `:endpoint` (required) - the endpoint module.
-    * `:static_dir` (required) - the path of public static directory. The value
-      of it must be:
-      * `{app, path}`, where `app` and `path` will be passed to
-        `Application.app_dir(app, path)`.
-      * an atom, which is the shortcut for `{app, "priv/static"}`.
-    * `:build_dir` - the dirname of a dir for placing built assets.
-      Default to `"build"`.
-      > Its parent directory is the directory specified by `:static_dir`, and
-      > that's immutable.
-    * `:hot_file` - the filename of the "hot" file.
-      Default to `"__hot__"`.
-      > Its parent directory is the directory specified by `:static_dir`. and
-      > that's immutable.
-    * `:manifest_file` - the filename of the manifest file.
-      Default to `"manifest.json"`.
-      > Its parent directory is the directory specified by `:build_dir`, and
-      > that's immutable.
-
-  ## References
-
-    * [Vite - Guide - Backend Integration\
-      ](https://vite.dev/guide/backend-integration.html)
-    * [`Illuminate/Foundation/Vite.php` from Laravel\
-      ](https://github.com/laravel/framework/blob/12.x/src/Illuminate/Foundation/Vite.php)
-
-  """
-
-  @note_on_component """
-  > When you `use Combo.Vite.HTML, opts`, a wrapper component that
-  > doesn't require `:config` attr will be generated.
-  """
-
-  @note_on_function """
-  > When you `use Combo.Vite.HTML, opts`, a wrapper function that
-  > doesn't require `config` argument will be generated.
   """
 
   use Combo.HTML
+  import Combo.Vite.CacheHelper
   alias Combo.Vite.Manifest
   alias Combo.Vite.URLAccessError
   alias Combo.Vite.FileNotFoundError
-
-  defmacro __using__(opts) do
-    caller = __CALLER__
-
-    opts =
-      if Macro.quoted_literal?(opts) do
-        Macro.prewalk(opts, &expand_alias(&1, caller))
-      else
-        opts
-      end
-
-    config_ast = build_config_ast(opts, caller)
-
-    quote do
-      @combo_vite_config unquote(config_ast)
-
-      attr :names, :list, required: true
-
-      def vite_assets(assigns) do
-        assigns = assign(assigns, :config, combo_vite_config())
-        unquote(__MODULE__).vite_assets(assigns)
-      end
-
-      attr :name, :string, required: true
-
-      def vite_asset(assigns) do
-        assigns = assign(assigns, :config, combo_vite_config())
-        unquote(__MODULE__).vite_asset(assigns)
-      end
-
-      attr :rest, :global
-
-      def vite_react_refresh(assigns) do
-        assigns = assign(assigns, :config, combo_vite_config())
-        unquote(__MODULE__).vite_react_refresh(assigns)
-      end
-
-      def vite_mode do
-        unquote(__MODULE__).vite_mode(combo_vite_config())
-      end
-
-      def vite_url(name) do
-        unquote(__MODULE__).vite_url(name, combo_vite_config())
-      end
-
-      def vite_content(name) do
-        unquote(__MODULE__).vite_content(name, combo_vite_config())
-      end
-
-      defp combo_vite_config, do: @combo_vite_config
-    end
-  end
-
-  defp expand_alias({:__aliases__, _, _} = alias, env), do: Macro.expand(alias, env)
-  defp expand_alias(other, _env), do: other
-
-  defp build_config_ast(opts, env) do
-    known_keys = [:endpoint, :static_dir, :build_dir, :hot_filename, :manifest_filename]
-    required_keys = [:endpoint, :static_dir]
-
-    for {key, _value} <- opts do
-      if key not in known_keys do
-        raise ArgumentError, "Unknown option: #{inspect(key)}"
-      end
-    end
-
-    for key <- required_keys do
-      if not Keyword.has_key?(opts, key) do
-        raise ArgumentError, "Missing required option: #{inspect(key)}"
-      end
-    end
-
-    endpoint = Keyword.fetch!(opts, :endpoint)
-    static_dir = read_path_opt!(opts, :static_dir)
-    build_dir = opts |> Keyword.get(:build_dir, "build") |> String.trim("/")
-    hot_filename = Keyword.get(opts, :hot_filename, "__hot__")
-    manifest_filename = Keyword.get(opts, :manifest_filename, "manifest.json")
-
-    config = %{
-      endpoint: endpoint,
-      static_dir: static_dir,
-      build_dir: build_dir,
-      hot_filename: hot_filename,
-      manifest_filename: manifest_filename
-    }
-
-    Macro.expand(Macro.escape(config), env)
-  end
-
-  defp read_path_opt!(opts, name) do
-    case Keyword.fetch!(opts, name) do
-      app when is_atom(app) -> {app, "priv/static"}
-      {_, _} = app_and_path -> app_and_path
-      _ -> raise ArgumentError, "the value of #{inspect(name)} option must be an atom or a tuple"
-    end
-  end
 
   @doc """
   Renders elements for given assets.
@@ -179,20 +40,20 @@ defmodule Combo.Vite.HTML do
     * In build mode, it loads the compiled and versioned assets, including any
       imported CSS.
 
-  #{@note_on_component}
-
   ## Examples
 
   ```ceex
   <.vite_assets names={["src/css/app.css", "src/js/app.js"]} />
   ```
   """
-  attr :names, :string, required: true
-  attr :config, :map, required: true
+  attr :names, :list, required: true
 
-  def vite_assets(%{names: names, config: config} = assigns) do
+  def vite_assets(%{names: names} = assigns) do
     names = Enum.map(names, &remove_leading_slash/1)
+    config = fetch_config!()
+
     assigns = assign(assigns, :names, names)
+    assigns = assign(assigns, :config, config)
 
     if running_hot?(config),
       do: vite_on_dev_server(assigns),
@@ -205,8 +66,6 @@ defmodule Combo.Vite.HTML do
   Different from `vite_assets/1`, it doesn't loads the `@vite/client`. All
   other behaviors are the same.
 
-  #{@note_on_component}
-
   ## Examples
 
   ```ceex
@@ -214,11 +73,13 @@ defmodule Combo.Vite.HTML do
   ```
   """
   attr :name, :string, required: true
-  attr :config, :map, required: true
 
-  def vite_asset(%{name: name, config: config} = assigns) do
+  def vite_asset(%{name: name} = assigns) do
     name = remove_leading_slash(name)
+    config = fetch_config!()
+
     assigns = assign(assigns, :name, name)
+    assigns = assign(assigns, :config, config)
 
     if running_hot?(config),
       do: vite_on_dev_server(assigns),
@@ -228,8 +89,6 @@ defmodule Combo.Vite.HTML do
   @doc """
   Renders script element for React refresh runtime, only when the Vite dev
   server is running.
-
-  #{@note_on_component}
 
   ## Examples
 
@@ -241,6 +100,9 @@ defmodule Combo.Vite.HTML do
   attr :rest, :global
 
   def vite_react_refresh(assigns) do
+    config = fetch_config!()
+    assigns = assign(assigns, :config, config)
+
     ~CE"""
     <%= if running_hot?(@config) do %>
       <script type="module" {@rest}>
@@ -259,22 +121,19 @@ defmodule Combo.Vite.HTML do
 
   Possible values are `:dev` and `:prod`.
 
-  #{@note_on_function}
-
   ## Examples
 
       vite_mode() == :dev
       vite_mode() == :prod
 
   """
-  def vite_mode(config) do
+  def vite_mode do
+    config = fetch_config!()
     if running_hot?(config), do: :dev, else: :prod
   end
 
   @doc """
   Gets the URL of a given asset.
-
-  #{@note_on_function}
 
   ## Examples
 
@@ -282,8 +141,9 @@ defmodule Combo.Vite.HTML do
   <img src={vite_url("src/images/logo.png")} />
   ```
   """
-  def vite_url(name, config) do
+  def vite_url(name) do
     name = remove_leading_slash(name)
+    config = fetch_config!()
 
     if running_hot?(config) do
       to_dev_server_url(name, config)
@@ -296,8 +156,6 @@ defmodule Combo.Vite.HTML do
 
   @doc """
   Gets the content of a given asset.
-
-  #{@note_on_function}
 
   ## Examples
 
@@ -319,13 +177,25 @@ defmodule Combo.Vite.HTML do
   </script>
   ```
   """
-  def vite_content(name, config) do
+  def vite_content(name) do
     name = remove_leading_slash(name)
+    config = fetch_config!()
 
     if running_hot?(config) do
       read_content_from_dev_server!(name, config)
     else
       read_content_from_built_file!(name, config)
+    end
+  end
+
+  defp fetch_config! do
+    if config = Process.get(:combo_vite_config) do
+      config
+    else
+      raise """
+      Unable to fetch the config of Combo.Vite, \
+      make sure Combo.Vite.Plug is configured correctly\
+      """
     end
   end
 
@@ -484,18 +354,6 @@ defmodule Combo.Vite.HTML do
         {:error, reason} -> raise FileNotFoundError, {path, reason}
       end
     end)
-  end
-
-  defp cached_fetch!(key, fun) when is_function(fun, 0) do
-    case :persistent_term.get(key, nil) do
-      nil ->
-        value = fun.()
-        :persistent_term.put(key, value)
-        value
-
-      value ->
-        value
-    end
   end
 
   attr :file, :string, required: true
