@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   schedule:
     - cron: "0 0 * * *"
 
@@ -20,40 +20,36 @@ jobs:
       # And, only the most recent 3 versions of Elixir are involved.
       matrix:
         include:
+          # Elixir v1.19
+          - { elixir: "1.19.x", otp: "28.x" }
+          - { elixir: "1.19.x", otp: "27.x" }
+          - { elixir: "1.19.x", otp: "26.x" }
           # Elixir v1.18
-          - { elixir: '1.18.x', otp: '27.x' }
-          # - { elixir: '1.18.x', otp: '26.x' }
-          # - { elixir: '1.18.x', otp: '25.x' }
-          # # Elixir v1.17
-          # - { elixir: '1.17.x', otp: '27.x' }
-          # - { elixir: '1.17.x', otp: '26.x' }
-          # - { elixir: '1.17.x', otp: '25.x' }
-          # # Elixir v1.16
-          # - { elixir: '1.16.x', otp: '26.x' }
-          # - { elixir: '1.16.x', otp: '25.x' }
-          # - { elixir: '1.16.x', otp: '24.x' }
+          - { elixir: "1.18.x", otp: "27.x" }
+          - { elixir: "1.18.x", otp: "26.x" }
+          - { elixir: "1.18.x", otp: "25.x" }
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Elixir
-      uses: erlef/setup-beam@v1
-      with:
-        elixir-version: ${{ matrix.elixir }}
-        otp-version: ${{ matrix.otp }}
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ matrix.elixir }}
+          otp-version: ${{ matrix.otp }}
 
-    - name: Restore dependencies cache
-      uses: actions/cache@v4
-      with:
-        path: deps
-        key: ${{ runner.os }}-elixir_${{ matrix.elixir }}-otp_${{ matrix.otp }}-mix_${{ hashFiles('**/mix.lock') }}
-        restore-keys: ${{ runner.os }}-elixir_${{ matrix.elixir }}-otp_${{ matrix.otp }}-mix
+      - name: Restore dependencies cache
+        uses: actions/cache@v4
+        with:
+          path: deps
+          key: ${{ runner.os }}-elixir_${{ matrix.elixir }}-otp_${{ matrix.otp }}-mix_${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ runner.os }}-elixir_${{ matrix.elixir }}-otp_${{ matrix.otp }}-mix
 
-    - name: Install dependencies
-      run: mix deps.get
+      - name: Install dependencies
+        run: mix deps.get
 
-    - name: Run mix check
-      run: mix check
+      - name: Run mix check
+        run: mix check
 
   npm_check-vite-plugin-combo:
     name: Node.js ${{ matrix.node }}
@@ -65,29 +61,29 @@ jobs:
       matrix:
         node: [20.x, 22.x, latest]
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js ${{ matrix.node }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node }}
+      - name: Setup Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
 
-    - name: Restore dependencies cache
-      uses: actions/cache@v4
-      with:
-        path: deps
-        key: ${{ runner.os }}-node_${{ matrix.node }}-npm_${{ hashFiles('**/package-lock.json') }}
-        restore-keys: ${{ runner.os }}-node_${{ matrix.node }}-npm
+      - name: Restore dependencies cache
+        uses: actions/cache@v4
+        with:
+          path: deps
+          key: ${{ runner.os }}-node_${{ matrix.node }}-npm_${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node_${{ matrix.node }}-npm
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: npm install
 
-    - name: Lint
-      run: npm run lint
+      - name: Lint
+        run: npm run lint
 
-    - name: Test
-      run: npm test
+      - name: Test
+        run: npm test
 
-    - name: Build
-      run: npm run build
+      - name: Build
+        run: npm run build
