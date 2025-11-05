@@ -60,10 +60,10 @@ defmodule Combo.Vite.MixProject do
       files: ~w(
         lib mix.exs README.md LICENSE
 
-        npm-packages/vite-plugin-combo/package.json
-        npm-packages/vite-plugin-combo/dist/
-        npm-packages/vite-plugin-combo/README.md
-        npm-packages/vite-plugin-combo/LICENSE
+        node-packages/vite-plugin-combo/package.json
+        node-packages/vite-plugin-combo/dist/
+        node-packages/vite-plugin-combo/README.md
+        node-packages/vite-plugin-combo/LICENSE
       )
     ]
   end
@@ -72,17 +72,17 @@ defmodule Combo.Vite.MixProject do
     [
       setup: [
         "deps.get",
-        "npm-packages.deps.get"
+        "node-packages.deps.get"
       ],
-      "npm-packages.deps.get": [
-        "cmd --cd npm-packages/vite-plugin-combo npm install"
+      "node-packages.deps.get": [
+        "cmd --cd node-packages/vite-plugin-combo pnpm install"
       ],
-      "npm-packages.build": [
-        "cmd --cd npm-packages/vite-plugin-combo npm run lint",
-        "cmd --cd npm-packages/vite-plugin-combo npm run test",
-        "cmd --cd npm-packages/vite-plugin-combo npm run build"
+      "node-packages.build": [
+        "cmd --cd node-packages/vite-plugin-combo pnpm run lint",
+        "cmd --cd node-packages/vite-plugin-combo pnpm run test",
+        "cmd --cd node-packages/vite-plugin-combo pnpm run build"
       ],
-      build: ["compile", "npm-packages.build"],
+      build: ["compile", "node-packages.build"],
       publish: ["hex.publish", "tag"],
       tag: &tag_release/1
     ]

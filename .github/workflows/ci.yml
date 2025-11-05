@@ -51,12 +51,12 @@ jobs:
       - name: Run mix check
         run: mix check
 
-  npm_check-vite-plugin-combo:
+  node_check-vite-plugin-combo:
     name: Node.js ${{ matrix.node }}
     runs-on: ubuntu-24.04
     defaults:
       run:
-        working-directory: npm-packages/vite-plugin-combo
+        working-directory: node-packages/vite-plugin-combo
     strategy:
       matrix:
         node: [20.x, 22.x, latest]
@@ -69,21 +69,26 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Restore dependencies cache
         uses: actions/cache@v4
         with:
           path: deps
-          key: ${{ runner.os }}-node_${{ matrix.node }}-npm_${{ hashFiles('**/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-node_${{ matrix.node }}-npm
+          key: ${{ runner.os }}-node_${{ matrix.node }}-pnpm_${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node_${{ matrix.node }}-pnpm
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Test
-        run: npm test
+        run: pnpm test
 
       - name: Build
-        run: npm run build
+        run: pnpm run build

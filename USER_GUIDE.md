@@ -21,11 +21,11 @@
 
 ### Installing Node
 
-You must ensure that Node.js (20+) and NPM are installed:
+You must ensure that Node.js (20+) and pnpm are installed:
 
 ```
 $ node -v
-$ npm -v
+$ pnpm -v
 ```
 
 ### Installing `Combo.Vite`
@@ -100,7 +100,7 @@ Add `vite-plugin-combo` as a development dependency of your `package.json`:
 {
   "devDependencies": {
     // ...
-    "vite-plugin-combo": "file:../deps/combo_vite/npm-packages/vite-plugin-combo"
+    "vite-plugin-combo": "file:../deps/combo_vite/node-packages/vite-plugin-combo"
   }
 }
 ```
@@ -108,14 +108,12 @@ Add `vite-plugin-combo` as a development dependency of your `package.json`:
 And, install it:
 
 ```
-$ npm install --install-links
+$ pnpm install
 ```
 
-> Why do we need `--install-links`?
+> If you want to use `npm`, you should add `--install-links`. Why?
 > By default, `npm` installs local NPM packages by symlinking the local paths, and the local NPM packages will not have their own dependencies installed when `npm install` is ran in current project.
 > We must use `npm install --install-links`, which will install package from local path like installing a package from the registry instead of creating a symlink.
->
-> If you use `pnpm`, you won't have this problem.
 
 ### Setting up `vite-plugin-combo`
 
@@ -191,11 +189,11 @@ export default defineConfig({
 
 If you are unable to generate a trusted certificate, you can try to install and configure the [@vitejs/plugin-basic-ssl](https://github.com/vitejs/vite-plugin-basic-ssl) plugin. When using untrusted certificates, you will need to accept the certificate warning for Vite development server in your browser by following the "Local" link in your console when running the `npm run dev` command.
 
-### Adding necessary NPM scripts
+### Adding necessary pnpm scripts
 
 Add follow content to your `package.json`:
 
-```javascripton
+```javascript
 {
   // ...
   "scripts": {
@@ -214,7 +212,7 @@ To make Vite start together with `mix combo.serve`, we need to configure Combo w
 config :my_app, MyApp.Web.Endpoint,
   # ...
   watchers: [
-    npm: [
+    pnpm: [
       "run",
       "dev",
       cd: Path.expand("../assets", __DIR__)
@@ -293,10 +291,10 @@ Or, running the `build` command will version and bundle your application's asset
 
 ```
 # Run the Vite development server
-$ npm run dev
+$ pnpm run dev
 
 # Build and version the assets for production
-$ npm run build
+$ pnpm run build
 ```
 
 ## Working with JavaScript
@@ -336,7 +334,7 @@ export default defineConfig({
 If you would like to build your frontend using the [React](https://reactjs.org/) framework, then you will also need to install the `@vitejs/plugin-react` plugin:
 
 ```
-$ npm install --save-dev @vitejs/plugin-react
+$ pnpm install --save-dev @vitejs/plugin-react
 ```
 
 You may then include the plugin in your `vite.config.js` configuration file:
@@ -376,7 +374,7 @@ You will also need to include the additional `<.vite_react_refresh />` component
 If you would like to build your frontend using the [Vue](https://vuejs.org/) framework, then you will also need to install the `@vitejs/plugin-vue` plugin:
 
 ```
-$ npm install --save-dev @vitejs/plugin-vue
+$ pnpm install --save-dev @vitejs/plugin-vue
 ```
 
 You may then include the plugin in your `vite.config.js` configuration file. There are a few additional options you will need when using the Vue plugin with Combo:
@@ -619,7 +617,7 @@ To ensure you don't forget to rebuild the SSR entry point, we recommend augmenti
 Then, to build it:
 
 ```
-$ npm run build
+$ pnpm run build
 ```
 
 ## Script and Style Tag Attributes
