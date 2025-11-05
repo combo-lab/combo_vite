@@ -78,7 +78,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: deps
-          key: ${{ runner.os }}-node_${{ matrix.node }}-pnpm_${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-node_${{ matrix.node }}-pnpm_${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: ${{ runner.os }}-node_${{ matrix.node }}-pnpm
 
       - name: Install dependencies
