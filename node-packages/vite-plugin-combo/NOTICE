@@ -1,7 +1,7 @@
 This software contains code derived from:
 
 - laravel/vite-plugin (https://github.com/laravel/vite-plugin)
-  Copyright Taylor Otwell
+  Copyright (c) Taylor Otwell
   Licensed under MIT License
 
 Full license texts are available in the LICENSES directory.
