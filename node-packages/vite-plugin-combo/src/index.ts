@@ -1,7 +1,7 @@
-import fs from 'fs'
-import { AddressInfo } from 'net'
-import { fileURLToPath } from 'url'
-import path from 'path'
+import fs from "fs"
+import { AddressInfo } from "net"
+import { fileURLToPath } from "url"
+import path from "path"
 import {
   Plugin,
   loadEnv,
@@ -11,7 +11,7 @@ import {
   Rollup,
   defaultAllowedOrigins,
   createLogger,
-} from 'vite'
+} from "vite"
 
 interface UserPluginConfig {
   /**
@@ -77,12 +77,12 @@ interface ComboPlugin extends Plugin {
   config: (config: UserConfig, env: ConfigEnv) => UserConfig
 }
 
-type DevServerUrl = `${'http' | 'https'}://${string}:${number}`
+type DevServerUrl = `${"http" | "https"}://${string}:${number}`
 
 let exitHandlersBound = false
 
-const logger = createLogger('info', {
-  prefix: '[vite-plugin-combo]',
+const logger = createLogger("info", {
+  prefix: "[vite-plugin-combo]",
 })
 
 /**
@@ -99,43 +99,41 @@ export default function combo(config: UserPluginConfig): ComboPlugin {
  * Convert the users configuration into a standard structure with defaults.
  */
 function resolveUserPluginConfig(config: UserPluginConfig): Required<PluginConfig> {
-  if (typeof config === 'undefined') {
-    throw new Error('vite-plugin-combo: missing configuration.')
+  if (typeof config === "undefined") {
+    throw new Error("vite-plugin-combo: missing configuration.")
   }
 
-  if (typeof config.input === 'undefined') {
+  if (typeof config.input === "undefined") {
     throw new Error('vite-plugin-combo: missing configuration for "input".')
   }
 
-  if (typeof config.staticDir === 'string') {
-    config.staticDir = config.staticDir.trim().replace(/^\/+/, '').replace(/\/+$/, '')
+  if (typeof config.staticDir === "string") {
+    config.staticDir = config.staticDir.trim().replace(/^\/+/, "").replace(/\/+$/, "")
 
-    if (config.staticDir === '') {
-      throw new Error(
-        'vite-plugin-combo: staticDir must be a directory. E.g. \'../priv/static\'.',
-      )
+    if (config.staticDir === "") {
+      throw new Error("vite-plugin-combo: staticDir must be a directory. E.g. '../priv/static'.")
     }
   }
 
-  if (typeof config.buildDir === 'string') {
-    config.buildDir = config.buildDir.trim().replace(/^\/+/, '').replace(/\/+$/, '')
+  if (typeof config.buildDir === "string") {
+    config.buildDir = config.buildDir.trim().replace(/^\/+/, "").replace(/\/+$/, "")
 
-    if (config.buildDir === '') {
-      throw new Error('vite-plugin-combo: buildDir must be a directory. E.g. \'build\'.')
+    if (config.buildDir === "") {
+      throw new Error("vite-plugin-combo: buildDir must be a directory. E.g. 'build'.")
     }
   }
 
-  if (typeof config.ssrOutDir === 'string') {
-    config.ssrOutDir = config.ssrOutDir.trim().replace(/^\/+/, '').replace(/\/+$/, '')
+  if (typeof config.ssrOutDir === "string") {
+    config.ssrOutDir = config.ssrOutDir.trim().replace(/^\/+/, "").replace(/\/+$/, "")
   }
 
   const input = config.input
-  const staticDir = config.staticDir ?? '../priv/static'
-  const buildDir = config.buildDir ?? 'build'
+  const staticDir = config.staticDir ?? "../priv/static"
+  const buildDir = config.buildDir ?? "build"
   const ssrInput = config.ssrInput ?? config.input
-  const ssrOutDir = config.ssrOutDir ?? '../priv/ssr'
-  const hotFile = path.join(staticDir, config.hotFile ?? '__hot__')
-  const transformOnServe = config.transformOnServe ?? (code => code)
+  const ssrOutDir = config.ssrOutDir ?? "../priv/ssr"
+  const hotFile = path.join(staticDir, config.hotFile ?? "__hot__")
+  const transformOnServe = config.transformOnServe ?? ((code) => code)
 
   return {
     input: input,
@@ -157,25 +155,24 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
   let userConfig: UserConfig
 
   const defaultAliases: Record<string, string> = {
-    '@': '/src',
+    "@": "/src",
   }
 
   return {
-    name: 'combo',
-    enforce: 'post',
+    name: "combo",
+    enforce: "post",
     config: (config, { command, mode }) => {
       userConfig = config
       const ssr = !!userConfig.build?.ssr
-      const env = loadEnv(mode, userConfig.envDir || process.cwd(), '')
+      const env = loadEnv(mode, userConfig.envDir || process.cwd(), "")
 
       return {
         base:
-          userConfig.base
-          ?? (command === 'build' ? resolveBaseFromEnv(pluginConfig, env) : ''),
+          userConfig.base ?? (command === "build" ? resolveBaseFromEnv(pluginConfig, env) : ""),
         publicDir: userConfig.publicDir ?? false,
         build: {
           emptyOutDir: userConfig.build?.emptyOutDir ?? true,
-          manifest: userConfig.build?.manifest ?? (ssr ? false : 'manifest.json'),
+          manifest: userConfig.build?.manifest ?? (ssr ? false : "manifest.json"),
           outDir: userConfig.build?.outDir ?? resolveOutDir(pluginConfig, ssr),
           rollupOptions: {
             input: userConfig.build?.rollupOptions?.input ?? resolveInput(pluginConfig, ssr),
@@ -183,7 +180,7 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
           assetsInlineLimit: userConfig.build?.assetsInlineLimit ?? 0,
         },
         server: {
-          origin: userConfig.server?.origin ?? 'http://__vite_dev_server_host_placeholder__',
+          origin: userConfig.server?.origin ?? "http://__vite_dev_server_host_placeholder__",
           cors: userConfig.server?.cors ?? {
             origin: userConfig.server?.origin ?? [
               defaultAllowedOrigins,
@@ -195,7 +192,7 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
           alias: Array.isArray(userConfig.resolve?.alias)
             ? [
                 ...(userConfig.resolve?.alias ?? []),
-                ...Object.keys(defaultAliases).map(alias => ({
+                ...Object.keys(defaultAliases).map((alias) => ({
                   find: alias,
                   replacement: defaultAliases[alias],
                 })),
@@ -214,21 +211,17 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
       resolvedConfig = config
     },
     transform(code) {
-      if (resolvedConfig.command === 'serve') {
-        code = code.replace(
-          /http:\/\/__vite_dev_server_host_placeholder__/g,
-          viteDevServerUrl,
-        )
+      if (resolvedConfig.command === "serve") {
+        code = code.replace(/http:\/\/__vite_dev_server_host_placeholder__/g, viteDevServerUrl)
         return pluginConfig.transformOnServe(code, viteDevServerUrl)
       }
     },
     configureServer(server) {
-      server.httpServer?.once('listening', () => {
+      server.httpServer?.once("listening", () => {
         const address = server.httpServer?.address()
 
-        const isAddressInfo = (
-          x: string | AddressInfo | null | undefined,
-        ): x is AddressInfo => typeof x === 'object'
+        const isAddressInfo = (x: string | AddressInfo | null | undefined): x is AddressInfo =>
+          typeof x === "object"
         if (isAddressInfo(address)) {
           viteDevServerUrl = userConfig.server?.origin
             ? (userConfig.server.origin as DevServerUrl)
@@ -249,7 +242,7 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
 
           fs.writeFileSync(
             pluginConfig.hotFile,
-            `${viteDevServerUrl}${server.config.base.replace(/\/$/, '')}`,
+            `${viteDevServerUrl}${server.config.base.replace(/\/$/, "")}`,
           )
         }
       })
@@ -261,14 +254,14 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
           }
         }
 
-        process.on('exit', clean)
-        process.on('SIGINT', () => process.exit())
-        process.on('SIGTERM', () => process.exit())
-        process.on('SIGHUP', () => process.exit())
+        process.on("exit", clean)
+        process.on("SIGINT", () => process.exit())
+        process.on("SIGTERM", () => process.exit())
+        process.on("SIGHUP", () => process.exit())
 
         // Exit process when the stdin is closed.
         // It's necessary to use Vite with Combo watchers.
-        process.stdin.on('close', () => process.exit())
+        process.stdin.on("close", () => process.exit())
         process.stdin.resume()
 
         exitHandlersBound = true
@@ -276,16 +269,16 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
 
       return () =>
         server.middlewares.use((req, res, next) => {
-          if (req.url === '/index.html') {
+          if (req.url === "/index.html") {
             const statusCode = 404
 
             res.statusCode = statusCode
 
             res.end(
               fs
-                .readFileSync(path.join(dirname(), 'dev-server-index.html'))
+                .readFileSync(path.join(dirname(), "dev-server-index.html"))
                 .toString()
-                .replaceAll('__STATUS_CODE__', statusCode.toString()),
+                .replaceAll("__STATUS_CODE__", statusCode.toString()),
             )
           }
 
@@ -299,9 +292,9 @@ function resolveComboPlugin(pluginConfig: Required<PluginConfig>): ComboPlugin {
  * Resolve the Vite base option from the environment.
  */
 function resolveBaseFromEnv(config: Required<PluginConfig>, env: Record<string, string>): string {
-  const baseUrl = env.ASSETS_BASE_URL ?? ''
-  const suffix = baseUrl.endsWith('/') ? '' : '/'
-  return baseUrl + suffix + config.buildDir + '/'
+  const baseUrl = env.ASSETS_BASE_URL ?? ""
+  const suffix = baseUrl.endsWith("/") ? "" : "/"
+  return baseUrl + suffix + config.buildDir + "/"
 }
 
 /**
@@ -333,23 +326,23 @@ function resolveOutDir(config: Required<PluginConfig>, ssr: boolean): string | u
  * Resolve the development server URL from the server address and configuration.
  */
 function resolveDevServerUrl(address: AddressInfo, config: ResolvedConfig): DevServerUrl {
-  const configHmrProtocol
-    = typeof config.server.hmr === 'object' ? config.server.hmr.protocol : null
+  const configHmrProtocol =
+    typeof config.server.hmr === "object" ? config.server.hmr.protocol : null
   const clientProtocol = configHmrProtocol
-    ? configHmrProtocol === 'wss'
-      ? 'https'
-      : 'http'
+    ? configHmrProtocol === "wss"
+      ? "https"
+      : "http"
     : null
-  const serverProtocol = config.server.https ? 'https' : 'http'
+  const serverProtocol = config.server.https ? "https" : "http"
   const protocol = clientProtocol ?? serverProtocol
 
-  const configHmrHost = typeof config.server.hmr === 'object' ? config.server.hmr.host : null
-  const configHost = typeof config.server.host === 'string' ? config.server.host : null
-  const serverAddress = address.family === 'IPv6' ? `[${address.address}]` : address.address
+  const configHmrHost = typeof config.server.hmr === "object" ? config.server.hmr.host : null
+  const configHost = typeof config.server.host === "string" ? config.server.host : null
+  const serverAddress = address.family === "IPv6" ? `[${address.address}]` : address.address
   const host = configHmrHost ?? configHost ?? serverAddress
 
-  const configHmrClientPort
-    = typeof config.server.hmr === 'object' ? config.server.hmr.clientPort : null
+  const configHmrClientPort =
+    typeof config.server.hmr === "object" ? config.server.hmr.clientPort : null
   const port = configHmrClientPort ?? address.port
 
   return `${protocol}://${host}:${port}`
@@ -359,5 +352,5 @@ function resolveDevServerUrl(address: AddressInfo, config: ResolvedConfig): DevS
  * The directory of the current file.
  */
 function dirname(): string {
-  return fileURLToPath(new URL('.', import.meta.url))
+  return fileURLToPath(new URL(".", import.meta.url))
 }
