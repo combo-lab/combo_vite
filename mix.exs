@@ -18,7 +18,8 @@ defmodule Combo.Vite.MixProject do
       homepage_url: @source_url,
       docs: docs(),
       package: package(),
-      aliases: aliases()
+      aliases: aliases(),
+      dialyzer: dialyzer()
     ]
   end
 
@@ -66,6 +67,16 @@ defmodule Combo.Vite.MixProject do
         node-packages/vite-plugin-combo/LICENSE
       )
     ]
+  end
+
+  defp dialyzer do
+    # the workaround for https://github.com/elixir-lang/elixir/issues/14837
+    erlang_otp_version = System.otp_release() |> to_string() |> String.to_integer()
+    elixir_version = System.version()
+
+    if erlang_otp_version >= 28 && Version.compare(elixir_version, "1.19.0") == :gt,
+      do: [flags: [:no_opaque]],
+      else: []
   end
 
   defp aliases do
